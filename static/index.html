@@ -1,55 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GOOFY CULTURE</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#fff;color:#111;font-family:monospace}
-.wrap{max-width:480px;margin:0 auto;padding-bottom:80px}
-.banner{width:100%;display:block;border-bottom:3px solid #111}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
-.card{border:2px solid #111;border-radius:14px;padding:8px;cursor:pointer}
-.brand{font-size:10px;opacity:.6;font-weight:900;letter-spacing:1px}
-.title{font-size:12px;font-weight:900;margin:3px 0;height:28px;overflow:hidden}
-.price{background:#111;color:#fff;padding:6px 10px;border-radius:8px;font-weight:900;display:inline-block;font-size:11px;margin-top:6px}
-.price.sold{background:#ff0000;transform:rotate(-2deg);font-size:10px}
-.pic{aspect-ratio:1;overflow:hidden;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center}
-.pic img{width:100%;height:100%;object-fit:cover}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3px solid #111;display:flex;justify-content:space-around;padding:12px 0;text-align:center;font-size:12px;font-weight:900;z-index:10}
-
-/* МОДАЛКА */
-#modal{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111}
-#modal .gal{display:flex;gap:8px;overflow-x:auto;padding:10px;scroll-snap-type:x mandatory}
-#modal .gal img{width:85%;aspect-ratio:1;object-fit:cover;border:2px solid #111;border-radius:14px;scroll-snap-align:center;flex-shrink:0}
-#thumbs{display:flex;gap:6px;padding:0 10px}
-#thumbs img{width:54px;height:54px;border:2px solid #111;border-radius:8px;opacity:.5}
-#thumbs img.active{opacity:1}
-.btn-main{width:100%;padding:16px;border:2px solid #111;background:#111;color:#fff;border-radius:12px;font-weight:900;font-size:14px}
-.btn-main:disabled{background:#ff0000;border-color:#ff0000}
-</style>
-</head>
-<body>
-<div class="wrap">
-<img src="/static/banner.jpg.WEBP" class="banner" onerror="this.src='./banner.jpg.WEBP'">
-<div style="text-align:center;padding:10px;font-weight:900;border-bottom:2px dashed #111">КАТАЛОГ • <span id="cc">0</span> ТОВАРА</div>
-<div class="grid" id="grid"></div>
-</div>
-
-<div class="nav">
-<div onclick="window.scrollTo(0,0)">⊞<br>Каталог</div>
-<div>🛒<br>Корзина</div>
-<div onclick="Telegram.WebApp.close()">✕<br>Закрыть</div>
-</div>
-
-<div id="modal"></div>
-
-<script>
-let prods=[], tg=window.Telegram?.WebApp; if(tg){tg.ready();tg.expand();}
-async function load(){
- try{let r=await fetch('/api/products'); prods=await r.json();}catch(e){prods=[]}
- document.getElementById('cc').innerText=prods.length;
- let g=document.getElementById('grid');
- if(!prods.length){g.innerHTML='<div style="grid-column:1/3;border:2px dashed #111;border-radius:14px;padding:30px;text-align:center;font-weight:900">ПУСТО<br>Добавь через /add в
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name=viewport content="width=device-width,initial-scale=1"><title>GOOFY</title><style>body{margin:0;font-family:monospace;max-width:480px;margin:0 auto}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}.card{border:2px solid #000;border-radius:12px;padding:6px}</style></head><body><h3 id="c" style="text-align:center">загрузка...</h3><div class="grid" id="g"></div><script>
+async function l(){
+ let r=await fetch('/api/products'); let d=await r.json();
+ document.getElementById('c').innerText='КАТАЛОГ • '+d.length+' ТОВАРА';
+ document.getElementById('g').innerHTML=d.map(p=>{
+  let img = (p.images&&p.images[0])? p.images[0] : p.img;
+  let sold = p.status==='sold_recent';
+  return `<div class=card><img src="" id="i${p.id}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#eee"><div style="opacity:.6;font-size:10px">${p.brand}</div><div style="font-weight:900">${p.name}</div><div style="background:${sold?'red':'#000'};color:#fff;display:inline-block;padding:4px 8px;border-radius:6px;margin-top:4px;font-size:11px">${sold?'СПИЗДИЛИ? САМ ВИНОВАТ!':p.price+'₽'}</div></div>`
+ }).join('');
+ d.forEach(async p=>{
+  let imgId = p.img || (p.images&&p.images[0]);
+  if(!imgId) return;
+  try{
+   let rr=await fetch('/api/file/'+imgId); let jj=await rr.json();
+   let el=document.getElementById('i'+p.id); if(el) el.src=jj.url;
+  }catch(e){}
+ });
+}
+l();
+</script></body></html>
