@@ -24,7 +24,7 @@ body{margin:0;background:#fff;color:#111;font-family:monospace}
 </head>
 <body>
 <div class="wrap">
-<img src="banner.jpg.WEBP" class="banner">
+<img src="/static/banner.jpg.WEBP" class="banner" onerror="this.src='./banner.jpg.WEBP'">
 <div style="text-align:center;padding:10px;font-weight:900">
 КАТАЛОГ • <span id="cc">0</span> ТОВАРА
 </div>
@@ -49,7 +49,6 @@ body{margin:0;background:#fff;color:#111;font-family:monospace}
 let prods=[],cart=JSON.parse(localStorage.getItem('gcfinal')||'[]');
 let tg=window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();}
-
 async function load(){
  try{
   let r=await fetch('/api/products');
@@ -95,4 +94,15 @@ function upd(){
 function openCart(){document.getElementById('cart').style.display='block';upd();}
 async function sendOrder(){
  let sum=cart.reduce((a,c)=>a+(+c.price||0),0);
- let text=`🔥 ЗАКАЗ GOOFY\n${cart.map(c=>`• ${c.name} ${c.price}₽`).join('\n')}\
+ let text=`🔥 ЗАКАЗ GOOFY\n${cart.map(c=>`• ${c.name} ${c.price}₽`).join('\n')}\nИтого: ${sum}₽`;
+ try{
+  await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,items:cart})});
+  alert('Улетело!');
+  cart=[];localStorage.removeItem('gcfinal');upd();
+  document.getElementById('cart').style.display='none';
+ }catch(e){window.open('https://t.me/goofyproculture?text='+encodeURIComponent(text),'_blank');}
+}
+load();
+</script>
+</body>
+</html>
