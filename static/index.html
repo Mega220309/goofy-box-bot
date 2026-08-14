@@ -1,10 +1,70 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Goofy Culture BOX</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Covered+By+Your+Grace&family=IBM+Plex+Mono:wght@700&family=Inter:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}html,body{margin:0}
-body{background:#b89a6a url('https://www.transparenttextures.com/patterns/cardboard-flat.png');font-family:'Inter',sans-serif;color:#111;overflow-x:hidden}
-.cardboard{max
+*{box-sizing:border-box}
+body{margin:0;background:#d4b896;background-image:url('https://i.ibb.co/3m6J0nWQ/cardboard.jpg');font-family:'Permanent Marker',cursive}
+.top{max-width:520px;margin:0 auto;padding:14px 10px}
+.header-tape{background:#e8dcc6;border:2px solid #111;transform:rotate(-1deg);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:4px 4px 0 #111;position:relative}
+.header-tape::before{content:'';position:absolute;top:-10px;left:20px;width:80px;height:24px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);opacity:.9;transform:rotate(-3deg)}
+.h1{font-family:'Caveat',cursive;font-size:32px;margin:0;transform:rotate(-1deg)}
+.icons{display:flex;gap:12px;font-size:22px}
+.tape2{margin:14px 0;background:linear-gradient(90deg,#c8c8c8,#b8b8b8);border:1px dashed #111;padding:8px 12px;transform:rotate(.5deg);font-family:monospace;font-weight:900;font-size:13px;letter-spacing:.5px;box-shadow:3px 3px 0 #111}
+.fragile{display:inline-block;border:3px solid #b4231e;color:#b4231e;padding:2px 10px;transform:rotate(-8deg);font-weight:900;font-size:18px;margin:10px 0;letter-spacing:1px}
+.grid{max-width:520px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:10px}
+.card{background:#fdfbf3;border:2px solid #111;position:relative;transform:rotate(-1deg);box-shadow:5px 5px 0 #111;padding:6px}
+.card:nth-child(even){transform:rotate(1deg)}
+.card::before{content:'';position:absolute;top:-10px;left:10px;width:50px;height:20px;background:linear-gradient(180deg,#d0d0d0,#a8a8a8);transform:rotate(-10deg);z-index:2}
+.img{width:100%;aspect-ratio:1;background:#fff;border:1px solid #111;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.img img{width:100%;height:100%;object-fit:cover}
+.name{font-size:16px;margin:6px 0 2px;line-height:1}
+.price{font-family:monospace;font-size:20px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+.stamp{position:absolute;bottom:58px;right:6px;background:#ffe8e0;border:1.5px solid #b4231e;color:#b4231e;font-size:10px;padding:2px 6px;transform:rotate(-12deg);font-weight:900}
+.btn{margin-top:6px;background:linear-gradient(180deg,#d0d0d0,#b0b0b0);border:1.5px solid #111;padding:6px;text-align:center;font-size:14px;box-shadow:2px 2px 0 #111;cursor:pointer}
+.btn:active{transform:translate(2px,2px);box-shadow:none}
+.empty{grid-column:1/-1;background:#fdfbf3;border:3px dashed #111;padding:30px;text-align:center;transform:rotate(-.5deg)}
+.cart{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#e8dcc6;border-top:3px solid #111;padding:12px;display:none;z-index:99;box-shadow:0 -4px 0 #111}
+</style>
+</head>
+<body>
+<div class="top">
+<div class="header-tape"><div class="h1">✈️ Goofy Culture ⭐</div><div class="icons">🔍 🛒<span id="cnt" style="background:#111;color:#fff;border-radius:50%;padding:0 6px;font-size:14px;margin-left:-6px">0</span></div></div>
+<div class="tape2">ТОЛЬКО ОРИГИНАЛ • ЛУЧШЕ ТВОЕГО БЫВШЕГО • FRAGILE</div>
+<div class="fragile">FRAGILE</div>
+<div style="font-family:monospace;font-size:12px;text-align:right;margin-bottom:6px;">КАТАЛОГ • <span id="total">0 ТОВАРА</span> ⭐</div>
+</div>
+<div class="grid" id="grid"></div>
+<div class="cart" id="cart"><b>КОРЗИНА (<span id="cnum">0</span>)</b><div id="clist"></div><div class="btn" onclick="order()">ОФОРМИТЬ В ТГ ✨</div></div>
+<script>
+let prods=[],cart=[];
+async function load(){
+ let r=await fetch('/api/products'); prods=await r.json();
+ document.getElementById('total').innerText=prods.length+' ТОВАРА';
+ let g=document.getElementById('grid');
+ if(!prods.length){g.innerHTML='<div class=empty>КОРОБКА ПУСТАЯ 😭<br><br>Добавь шмот через /add в боте</div>';return}
+ g.innerHTML='';
+ for(let p of prods){
+   let imgUrl=''; try{let fr=await fetch('/api/file/'+p.img); let j=await fr.json(); imgUrl=j.url;}catch(e){}
+   let d=document.createElement('div'); d.className='card';
+   d.innerHTML=`<div class=img>${imgUrl?`<img src="${imgUrl}">`:'📦'}</div>
+   <div class=name>${p.name.toUpperCase()}</div>
+   <div class=price><span>${p.price} ₽</span><span style="font-size:10px">${p.size}</span></div>
+   ${p.tag?`<div class=stamp>${p.tag}</div>`:''}
+   <div class=btn onclick="add(${p.id})">В КОРЗИНУ</div>`;
+   g.appendChild(d);
+ }
+}
+function add(id){let p=prods.find(x=>x.id==id); cart.push(p); upd()}
+function upd(){document.getElementById('cnt').innerText=cart.length; document.getElementById('cnum').innerText=cart.length;
+ document.getElementById('cart').style.display=cart.length?'block':'none';
+ document.getElementById('clist').innerHTML=cart.map(c=>c.name+' - '+c.price+'₽').join('<br>');
+}
+function order(){let txt=cart.map(c=>c.name+' '+c.size+' '+c.price+'₽').join('%0A'); window.open('https://t.me/goofy_culture?text='+txt)}
+load();
+</script>
+</body>
+</html>
