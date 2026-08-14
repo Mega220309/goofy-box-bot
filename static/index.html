@@ -1,108 +1,104 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GOOFY CULTURE</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#fff;color:#111;font-family:monospace}
-.wrap{max-width:480px;margin:0 auto;padding-bottom:80px}
-.banner{width:100%;display:block;border-bottom:3px solid #111}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
-.card{border:2px solid #111;border-radius:14px;padding:8px}
-.pic{aspect-ratio:1;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.pic img{width:100%;height:100%;object-fit:cover}
-.name{font-size:12px;font-weight:900;margin:6px 0}
-.row{display:flex;gap:6px}
-.price{background:#111;color:#fff;padding:6px 10px;border-radius:8px;font-weight:900}
-.btn{flex:1;border:2px solid #111;background:#fff;border-radius:8px;padding:6px;font-weight:900;font-size:11px}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3px solid #111;display:flex;justify-content:space-around;padding:12px 0;text-align:center;font-size:12px;font-weight:900}
-#cart{position:fixed;inset:0;background:#fff;z-index:99;display:none;padding:14px;max-width:480px;margin:0 auto}
-</style>
-</head>
-<body>
-<div class="wrap">
-<img src="/static/banner.jpg.WEBP" class="banner" onerror="this.src='./banner.jpg.WEBP'">
-<div style="text-align:center;padding:10px;font-weight:900">
-КАТАЛОГ • <span id="cc">0</span> ТОВАРА
-</div>
-<div class="grid" id="grid"></div>
-</div>
+import os, time, json, threading, requests
+from flask import Flask, jsonify, request, send_from_directory
 
-<div class="nav">
-<div onclick="window.scrollTo(0,0)">⊞<br>Каталог</div>
-<div onclick="openCart()">🛒<br>Корзина (<span id="cnt">0</span>)</div>
-<div onclick="window.Telegram.WebApp.close()">👤<br>Профиль</div>
-</div>
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = int(os.getenv("ADMIN_ID", "0")) # поставь свой ID в Railway -> Variables
+DATA_FILE = "products.json"
+SOLD_HOURS = 10
 
-<div id="cart">
-<b>КОРЗИНА</b>
-<span onclick="document.getElementById('cart').style.display='none'" style="float:right;font-size:22px;cursor:pointer">✕</span>
-<div id="clist" style="margin:12px 0"></div>
-<b>ИТОГО <span id="csum">0</span>₽</b>
-<div style="background:#111;color:#fff;text-align:center;padding:14px;border-radius:10px;margin-top:12px" onclick="sendOrder()">ОФОРМИТЬ В TELEGRAM</div>
-</div>
+app = Flask(__name__, static_folder="static")
 
-<script>
-let prods=[],cart=JSON.parse(localStorage.getItem('gcfinal')||'[]');
-let tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();}
-async function load(){
- try{
-  let r=await fetch('/api/products');
-  prods=await r.json();
- }catch(e){prods=[]}
- document.getElementById('cc').innerText=prods.length;
- let g=document.getElementById('grid');
- if(!prods.length){
-  g.innerHTML='<div style="grid-column:1/3;border:2px dashed #111;border-radius:14px;padding:30px;text-align:center">ПУСТО<br>Добавь через /add в боте</div>';
-  return
- }
- g.innerHTML='';
- for(let p of prods){
-  let d=document.createElement('div');
-  d.className='card';
-  d.innerHTML=`
-   <div class=pic><img id="i${p.id}"></div>
-   <div class=name>${p.name}</div>
-   <div class=row>
-    <div class=price>${p.price}₽</div>
-    <div class=btn onclick="add(${p.id})">В КОРЗИНУ</div>
-   </div>`;
-  g.appendChild(d);
-  if(p.img) fetch('/api/file/'+p.img).then(r=>r.json()).then(j=>{
-   let im=document.getElementById('i'+p.id);
-   if(im) im.src=j.url
-  });
- }
- upd();
-}
-function add(id){
- let p=prods.find(x=>x.id==id);
- cart.push(p);
- localStorage.setItem('gcfinal',JSON.stringify(cart));
- upd();openCart();
-}
-function upd(){
- document.getElementById('cnt').innerText=cart.length;
- let s=cart.reduce((a,c)=>a+(+c.price||0),0);
- document.getElementById('csum').innerText=s;
- document.getElementById('clist').innerHTML=cart.map((c,i)=>`${c.name} ${c.price}₽ <span onclick="cart.splice(${i},1);localStorage.setItem('gcfinal',JSON.stringify(cart));upd()" style="color:red">[x]</span>`).join('<br>')||'Пусто';
-}
-function openCart(){document.getElementById('cart').style.display='block';upd();}
-async function sendOrder(){
- let sum=cart.reduce((a,c)=>a+(+c.price||0),0);
- let text=`🔥 ЗАКАЗ GOOFY\n${cart.map(c=>`• ${c.name} ${c.price}₽`).join('\n')}\nИтого: ${sum}₽`;
- try{
-  await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,items:cart})});
-  alert('Улетело!');
-  cart=[];localStorage.removeItem('gcfinal');upd();
-  document.getElementById('cart').style.display='none';
- }catch(e){window.open('https://t.me/goofyproculture?text='+encodeURIComponent(text),'_blank');}
-}
-load();
-</script>
-</body>
-</html>
+def load_products():
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except: return []
+    return []
+
+def save_products(data):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+products = load_products()
+
+def send_tg(text):
+    if not BOT_TOKEN or not ADMIN_ID: return
+    try:
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+                      json={"chat_id": ADMIN_ID, "text": text, "parse_mode": "HTML"}, timeout=5)
+    except: pass
+
+def get_status(p):
+    if not p.get("sold"): return "active"
+    if time.time() - p.get("sold_at", 0) > SOLD_HOURS * 3600:
+        return "expired"
+    return "sold_recent"
+
+def auto_delete_worker(pid):
+    time.sleep(SOLD_HOURS * 3600)
+    global products
+    prod = next((x for x in products if x["id"] == pid), None)
+    if prod and prod.get("sold"):
+        products = [x for x in products if x["id"] != pid]
+        save_products(products)
+        send_tg(f"🗑️ <b>УШЛО ЧЕРЕЗ 10Ч</b>\nБренд: {prod.get('brand')}\nТовар: {prod.get('name')}\nЦена: {prod.get('price')}₽")
+
+# при старте чистим просроченные
+now = time.time()
+products = [p for p in products if not (p.get("sold") and now - p.get("sold_at",0) > SOLD_HOURS*3600)]
+save_products(products)
+
+@app.route("/")
+def index():
+    return send_from_directory("static", "index.html")
+
+@app.route("/static/<path:path>")
+def static_files(path):
+    return send_from_directory("static", path)
+
+@app.route("/api/products")
+def api_products():
+    res = []
+    for p in products:
+        st = get_status(p)
+        if st == "expired": continue
+        cp = p.copy()
+        cp["status"] = st
+        res.append(cp)
+    return jsonify(res)
+
+@app.route("/api/file/<file_id>")
+def api_file(file_id):
+    # твоя старая логика получения файла из ТГ
+    return jsonify({"url": f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_id}"})
+
+@app.route("/api/admin/toggle-sold/<int:pid>", methods=["POST"])
+def toggle_sold(pid):
+    global products
+    for p in products:
+        if p["id"] == pid:
+            if p.get("sold"):
+                p["sold"] = False
+                p["sold_at"] = 0
+                save_products(products)
+                send_tg(f"↩️ Вернул в продажу: {p['brand']} {p['name']}")
+            else:
+                p["sold"] = True
+                p["sold_at"] = time.time()
+                save_products(products)
+                threading.Thread(target=auto_delete_worker, args=(pid,), daemon=True).start()
+                send_tg(f"🔥 Продано: {p['brand']} {p['name']} {p['price']}₽\nЧерез 10ч удалю и отчитаюсь.")
+            return jsonify(p)
+    return jsonify({"error": "not found"}), 404
+
+@app.route("/api/admin/delete/<int:pid>", methods=["DELETE"])
+def delete_prod(pid):
+    global products
+    products = [p for p in products if p["id"] != pid]
+    save_products(products)
+    return jsonify({"ok": True})
+
+# твой старый код бота для /add оставь ниже, он не мешает Flask
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
