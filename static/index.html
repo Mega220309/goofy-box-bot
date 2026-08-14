@@ -2,7 +2,7 @@
 *{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace;overflow-x:hidden}
 .wrap{max-width:480px;margin:0 auto;padding-bottom:90px}
 .banner{width:100%;border-bottom:3px solid #111;display:block}
-.head{padding:12px;text-align:center;font-weight:900;border-bottom:3px solid #111}
+.head{padding:14px;text-align:center;font-weight:900;border-bottom:3px solid #111;letter-spacing:1px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
 .card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff}
 .pic{aspect-ratio:1;background:#f2f2f2;border-radius:12px;overflow:hidden}
@@ -39,7 +39,7 @@
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style></head><body><div class="wrap">
 <img src="/static/banner.jpg.WEBP" class="banner" onerror="this.style.display='none'">
-<div class="head">КАТАЛОГ • <span id="cc">0</span> ТОВАРА</div>
+<div class="head">КАТАЛОГ</div>
 <div class="grid" id="grid"></div>
 </div>
 <div class="nav">
@@ -77,3 +77,12 @@ function saveCart(){CART=[...new Set(CART.map(Number))]; localStorage.setItem(CA
 saveCart();
 async function load(){
  try{let r=await fetch('/api/products'); P=await r.json();}catch(e){P=[]}
+ CART=CART.filter(id=>P.some(p=>Number(p.id)==id)); saveCart();
+ let g=document.getElementById('grid');
+ if(!P.length){g.innerHTML='<div style="grid-column:1/3;text-align:center;padding:40px;border:2.5px dashed #111;border-radius:16px;font-weight:900">ПУСТОЙ ЯЩИК БРО<br><span style="font-size:11px;opacity:.5">Добавь через /add</span></div>'; return}
+ g.innerHTML=P.map(p=>`<div class="card" onclick="openM(${p.id})"><div class="pic"><img id="im_${p.id}" src=""></div><div class="brand">${p.brand||''}</div><div class="name">${p.name}</div>${p.status==='sold_recent'?`<div class="price sold">СП*ЗДИЛИ? САМ ВИНОВАТ</div>`:`<div class="price">${p.price}₽</div>`}</div>`).join('');
+ P.forEach(async p=>{let fid=p.images&&p.images[0]?p.images[0]:p.img; if(!fid) return; try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); let el=document.getElementById('im_'+p.id); if(el) el.src=jj.url;}catch(e){}});
+}
+function openM(id){
+ id=Number(id); let p=P.find(x=>Number(x.id)==id); if(!p) return;
+ let imgs
