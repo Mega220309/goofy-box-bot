@@ -12,13 +12,18 @@
 .price{background:#111;color:#fff;padding:7px 10px;border-radius:9px;display:inline-block;font-weight:900;font-size:11px;margin-top:6px}
 .price.sold{transform:rotate(-2deg)}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3.5px solid #111;display:flex;justify-content:space-around;align-items:flex-end;padding:12px 0 14px;text-align:center;z-index:20}
-.nav-item{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;min-width:80px}
+.nav-item{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;min-width:80px;position:relative}
 .nav-item b{font-size:12px;font-weight:900;line-height:1}
-.icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:2.5px solid #111;border-radius:6px;position:relative;background:#fff}
+.icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:2.5px solid #111;border-radius:6px;position:relative;background:#fff;transition:.3s}
 .icon.catalog{width:32px;height:32px;font-size:18px;font-weight:900}
 .icon.box{width:36px;height:36px;border-radius:8px}
 .icon.box:before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:16px;height:8px;border:2.5px solid #111;border-bottom:0;border-radius:4px 4px 0 0;background:#fff}
 .icon.close{border:none;font-size:28px;width:36px;height:36px}
+.icon.box.jump{animation:jump.6s ease 2; background:#111; color:#fff; border-color:#111}
+.icon.box.jump:before{background:#111;border-color:#111}
+@keyframes jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.badge{position:absolute;top:-6px;right:14px;background:#111;color:#fff;font-size:10px;font-weight:900;padding:2px 6px;border-radius:10px;opacity:0;transform:scale(0);transition:.3s}
+.badge.show{opacity:1;transform:scale(1)}
 #modal,#cartModal{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111}
 .gal{width:100%;display:flex;gap:12px;overflow-x:auto;padding:12px;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none}
 .gal::-webkit-scrollbar{display:none}
@@ -32,6 +37,8 @@
 .sub{font-size:11px;text-align:center;margin-top:10px;opacity:.5}
 .cart-item{display:flex;gap:12px;border:2.5px solid #111;border-radius:14px;padding:10px;margin:10px 12px}
 .cart-item img{width:80px;height:80px;border-radius:10px;border:2px solid #111;object-fit:cover;background:#f2f2f2}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:12px 20px;border-radius:12px;font-weight:900;font-size:12px;z-index:100;opacity:0;pointer-events:none;transition:.4s;border:2px solid #111;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style></head><body><div class="wrap">
 <img src="/static/banner.jpg.WEBP" class="banner" onerror="this.style.display='none'">
 <div class="head">КАТАЛОГ • <span id="cc">0</span> ТОВАРА</div>
@@ -39,13 +46,16 @@
 </div>
 <div class="nav">
 <div class="nav-item" onclick="closeAll();window.scrollTo(0,0)"><div class="icon catalog">⊞</div><b>Каталог</b></div>
-<div class="nav-item" onclick="openCart()"><div class="icon box"></div><b id="cartCount">Коробка</b></div>
+<div class="nav-item" onclick="openCart()"><div class="icon box" id="boxIcon"></div><div class="badge" id="badge">+1</div><b id="cartCount">Коробка</b></div>
 <div class="nav-item" onclick="Telegram.WebApp.close()"><div class="icon close">×</div><b>Закрыть</b></div>
 </div>
+<div class="toast" id="toast">ТОВАР В КОРОБКЕ 📦</div>
 <div id="modal"></div>
 <div id="cartModal"></div>
 <script>
-let P=[], CART=[...new Set((JSON.parse(localStorage.getItem('goofy_cart')||'[]')).map(Number))], tg=Telegram.WebApp; tg.ready(); tg.expand();
+let P=[], CART_KEY='goofy_box_v3', CART=[];
+try{CART=[...new Set((JSON.parse(localStorage.getItem(CART_KEY)||'[]')).map(Number))]}catch(e){CART=[]}
+let tg=Telegram.WebApp; tg.ready(); tg.expand();
 let audioCtx;
 function playBoxSound(){
  try{
@@ -67,13 +77,14 @@ function playBoxSound(){
 }
 function saveCart(){
  CART=[...new Set(CART.map(Number))];
- localStorage.setItem('goofy_cart',JSON.stringify(CART));
+ localStorage.setItem(CART_KEY,JSON.stringify(CART));
  let el=document.getElementById('cartCount');
  if(el) el.innerText=CART.length?`Коробка (${CART.length})`:'Коробка';
 }
 saveCart();
 async function load(){
  try{let r=await fetch('/api/products'); P=await r.json();}catch(e){P=[]}
+ CART=CART.filter(id=>P.some(p=>Number(p.id)==id)); saveCart();
  document.getElementById('cc').innerText=P.length;
  let g=document.getElementById('grid');
  if(!P.length){g.innerHTML='<div style="grid-column:1/3;text-align:center;padding:40px;border:2.5px dashed #111;border-radius:16px;font-weight:900">ПУСТО</div>'; return}
@@ -97,13 +108,31 @@ function addToBox(id,price){
  if(CART.includes(id)){
   CART=CART.filter(x=>x!==id);
   if(btn){btn.innerText='ПОЛОЖИТЬ В КОРОБКУ.'; btn.classList.remove('added'); if(btn.nextElementSibling) btn.nextElementSibling.innerText='Оригинал • Доставка по РФ';}
- }else{
-  playBoxSound();
-  CART=[...new Set([...CART, id])];
-  if(btn){btn.innerText=`+1 К СТИЛЮ, -${price} К ГРУСТИ`; btn.classList.add('added'); if(btn.nextElementSibling) btn.nextElementSibling.innerText='В коробке, бро 🔥';}
-  if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+  saveCart(); if(document.getElementById('cartModal').style.display==='block') renderCart();
+  return;
  }
+ playBoxSound();
+ CART=[...new Set([...CART, id])];
+ if(btn){btn.innerText=`+1 К СТИЛЮ, -${price} К ГРУСТИ`; btn.classList.add('added'); if(btn.nextElementSibling) btn.nextElementSibling.innerText='В коробке, бро 🔥';}
+ if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
  saveCart();
+ // показываем тост и прыжок коробки
+ let badge=document.getElementById('badge'); let boxIcon=document.getElementById('boxIcon'); let toast=document.getElementById('toast');
+ if(badge){badge.classList.add('show'); badge.innerText='+1';}
+ if(boxIcon){boxIcon.classList.add('jump');}
+ if(toast){toast.innerText=`${P.find(x=>Number(x.id)==id)?.name||'ТОВАР'} В КОРОБКЕ 📦`; toast.classList.add('show');}
+ // через 3.5 сек кидаем в каталог и указываем на коробку
+ setTimeout(()=>{
+  closeAll();
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(toast) toast.classList.remove('show');
+  if(badge){badge.innerText='Смотри тут!'; setTimeout(()=>badge.classList.remove('show'),2000);}
+  if(boxIcon){setTimeout(()=>boxIcon.classList.remove('jump'),1200);}
+  // еще раз мигнем
+  setTimeout(()=>{
+   if(boxIcon){boxIcon.classList.add('jump'); setTimeout(()=>boxIcon.classList.remove('jump'),800);}
+  },400);
+ },3500);
  if(document.getElementById('cartModal').style.display==='block') renderCart();
 }
 function openCart(){renderCart(); document.getElementById('cartModal').style.display='block';}
@@ -117,4 +146,5 @@ function renderCart(){
 function removeFromCart(id){id=Number(id); CART=CART.filter(x=>x!==id); saveCart(); renderCart(); let b=document.getElementById('buy_'+id); if(b){b.innerText='ПОЛОЖИТЬ В КОРОБКУ.'; b.classList.remove('added');}}
 function updDots(id){let gal=document.getElementById('gal_'+id); if(!gal) return; let w=gal.clientWidth*0.85+12; let idx=Math.round(gal.scrollLeft/w); document.querySelectorAll(`[id^="d_${id}_"]`).forEach((el,i)=>{el.className=i==idx?'on':''});}
 load();
+localStorage.removeItem('goofy_cart'); localStorage.removeItem('goofy_cart_v2');
 </script></body></html>
