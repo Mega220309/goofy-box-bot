@@ -1,129 +1,98 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Goofy Culture BOX</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GOOFY CULTURE</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#bda07a;font-family:Arial,Helvetica,sans-serif}
-.wrap{max-width:520px;margin:0 auto;padding:10px 10px 110px}
-.head{background:#e8d5b0;border:3px solid #111;box-shadow:6px 6px 0 #111;padding:14px;position:relative;transform:rotate(-1deg)}
-.head h1{margin:0;font-size:40px;font-weight:900;line-height:.9;font-family:Impact,Arial Black,sans-serif}
-.tape{margin:16px -2px;background:linear-gradient(90deg,#9a9a9a,#d9d9d9,#9a9a9a);border:3px solid #111;box-shadow:5px 5px 0 #111;padding:12px;text-align:center;font-weight:900;font-size:19px;transform:rotate(-.4deg)}
-.fragile{display:inline-block;border:3px solid #b00;color:#b00;padding:6px 18px;font-weight:900;font-size:26px;transform:rotate(-6deg);background:#f5d0d0;margin:10px 0}
-.catalog{text-align:right;font-weight:900;font-family:monospace;margin:8px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.card{background:#fffef5;border:3px solid #111;box-shadow:6px 6px 0 #111;padding:8px;cursor:pointer;position:relative}
-.card:before{content:'';position:absolute;top:-11px;left:-9px;width:38px;height:18px;background:#aaa;background:linear-gradient(90deg,#999,#ddd);border:1px solid #111;transform:rotate(-25deg)}
-.pic{width:100%;aspect-ratio:1;border:2.5px solid #111;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
+body{margin:0;background:#fff;color:#111;font-family:monospace}
+.wrap{max-width:480px;margin:0 auto;padding-bottom:80px}
+.banner{width:100%;display:block;border-bottom:3px solid #111}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+.card{border:2px solid #111;border-radius:14px;padding:8px}
+.pic{aspect-ratio:1;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .pic img{width:100%;height:100%;object-fit:cover}
-.name{font-weight:900;margin-top:6px;text-transform:uppercase;font-size:14px;min-height:32px}
-.line{display:flex;justify-content:space-between;border-top:3px solid #111;margin-top:6px;padding-top:6px;font-weight:900}
-.btn{background:linear-gradient(90deg,#9a9a9a,#d0d0d0);border:2.5px solid #111;padding:10px;text-align:center;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #111}
-.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
-.bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-.box{background:#e8d5b0;border:3px solid #111;box-shadow:6px 6px 0 #111;padding:10px;font-weight:900;font-size:12px}
-.map{height:120px;border:2px solid #111;background:#b8dfff;display:flex;align-items:center;justify-content:center;font-size:40px}
-.foot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:#c9ad84;border-top:3.5px solid #111;display:flex;justify-content:space-around;padding:10px 0;z-index:50}
-.foot div{font-weight:900;font-size:11px;text-align:center;cursor:pointer}
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;z-index:100;align-items:center;justify-content:center;padding:10px}
-#modal .inner{background:#fffef5;border:3.5px solid #111;box-shadow:10px 10px 0 #111;max-width:500px;width:100%;max-height:90vh;overflow:auto;padding:12px;position:relative}
-#cart{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);width:94%;max-width:480px;background:#fffef5;border:3.5px solid #111;padding:14px;display:none;z-index:90;box-shadow:10px 10px 0 #111}
-input{width:100%;border:2.5px solid #111;padding:12px;margin:6px 0;font-weight:900;font-size:16px}
+.name{font-size:12px;font-weight:900;margin:6px 0}
+.row{display:flex;gap:6px}
+.price{background:#111;color:#fff;padding:6px 10px;border-radius:8px;font-weight:900}
+.btn{flex:1;border:2px solid #111;background:#fff;border-radius:8px;padding:6px;font-weight:900;font-size:11px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3px solid #111;display:flex;justify-content:space-around;padding:12px 0;text-align:center;font-size:12px;font-weight:900}
+#cart{position:fixed;inset:0;background:#fff;z-index:99;display:none;padding:14px;max-width:480px;margin:0 auto}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="head"><h1>GOOFY CULTURE</h1><div style="position:absolute;right:10px;top:12px">🛒 <b id="cnt">0</b></div></div>
-<div class="tape">ТОЛЬКО ОРИГИНАЛ • ЛУЧШЕ ТВОЕГО БЫВШЕГО</div>
-<div class="fragile">FRAGILE</div>
-<div class="catalog">КАТАЛОГ • <span id="total">0 ТОВАРА</span></div>
+<img src="banner.jpg.WEBP" class="banner">
+<div style="text-align:center;padding:10px;font-weight:900">
+КАТАЛОГ • <span id="cc">0</span> ТОВАРА
+</div>
 <div class="grid" id="grid"></div>
-<div class="bottom">
-<div class="box"><div class="map">🗺️ Москва</div>• ДОСТАВКА: МОСКВА • ЦЕНТР<br>Точка: м.Кузнецкий Мост</div>
-<div class="box">⚠️ ВСЕ ВЕЩИ – 1/1 VINTAGE.<br>• БЕЗ ВОЗВРАТА<br>• ПАХНЕТ УЛИЦЕЙ И СВОБОДОЙ<br><br>ANTI-FASHION © 2024</div>
-</div>
-</div>
-<div class="foot">
-<div onclick="window.scrollTo({top:0,behavior:'smooth'})">📖<br>КАТАЛОГ</div>
-<div onclick="openCart()">🛒<br>КОРЗИНА</div>
-<div onclick="location.href='https://t.me/goofyproculture'">✈️<br>ТГ</div>
 </div>
 
-<div id="modal" onclick="if(event.target==this)closeModal()"><div class="inner" id="modalInner"></div></div>
-<div id="cart">
-<b>КОРЗИНА (<span id="cnum">0</span>)</b>
-<div id="clist" style="margin:10px 0"></div>
-<div id="checkout" style="display:none">
-<input id="cname" placeholder="Имя">
-<input id="cphone" placeholder="Телефон @ или номер">
-<input id="caddr" placeholder="Адрес / Самовывоз">
-<div class="btn" onclick="sendOrder()">ОПЛАТИТЬ • <span id="csum">0</span> ₽</div>
-<div style="font-size:11px;margin-top:6px;font-family:monospace">Оплата на карту / СБП, менеджер напишет в ТГ</div>
+<div class="nav">
+<div onclick="window.scrollTo(0,0)">⊞<br>Каталог</div>
+<div onclick="openCart()">🛒<br>Корзина (<span id="cnt">0</span>)</div>
+<div onclick="window.Telegram.WebApp.close()">👤<br>Профиль</div>
 </div>
-<div class="btn" id="toCheckout" onclick="showCheckout()">ОФОРМИТЬ В ТГ</div>
-<div class="btn" style="background:#fff;margin-top:8px" onclick="document.getElementById('cart').style.display='none'">ЗАКРЫТЬ</div>
+
+<div id="cart">
+<b>КОРЗИНА</b>
+<span onclick="document.getElementById('cart').style.display='none'" style="float:right;font-size:22px;cursor:pointer">✕</span>
+<div id="clist" style="margin:12px 0"></div>
+<b>ИТОГО <span id="csum">0</span>₽</b>
+<div style="background:#111;color:#fff;text-align:center;padding:14px;border-radius:10px;margin-top:12px" onclick="sendOrder()">ОФОРМИТЬ В TELEGRAM</div>
 </div>
 
 <script>
-let prods=[],cart=JSON.parse(localStorage.getItem('gc_cart')||'[]');
-const TG_USERNAME='goofyproculture';
+let prods=[],cart=JSON.parse(localStorage.getItem('gcfinal')||'[]');
+let tg=window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
+
 async function load(){
- try{let r=await fetch('/api/products');prods=await r.json();}catch(e){prods=[]}
- document.getElementById('total').innerText=prods.length+' ТОВАРА';
+ try{
+  let r=await fetch('/api/products');
+  prods=await r.json();
+ }catch(e){prods=[]}
+ document.getElementById('cc').innerText=prods.length;
  let g=document.getElementById('grid');
- if(!prods.length){g.innerHTML='<div style=\"grid-column:1/-1;background:#fffef5;border:3px dashed #111;padding:40px;text-align:center;font-weight:900\">КОРОБКА ПУСТАЯ 😭<br>Добавь через /add в боте</div>';return}
+ if(!prods.length){
+  g.innerHTML='<div style="grid-column:1/3;border:2px dashed #111;border-radius:14px;padding:30px;text-align:center">ПУСТО<br>Добавь через /add в боте</div>';
+  return
+ }
  g.innerHTML='';
  for(let p of prods){
-   let imgUrl=''; try{let fr=await fetch('/api/file/'+p.img); let j=await fr.json(); imgUrl=j.url;}catch(e){}
-   let d=document.createElement('div'); d.className='card'; d.onclick=()=>openProd(p.id);
-   d.innerHTML=`<div class=pic>${imgUrl?`<img src="${imgUrl}">`:'📦'}</div><div class=name>${p.name.toUpperCase()}</div><div class=line><span style="font-family:monospace;font-size:10px">598106</span><span>${p.price} ₽</span></div><div class=btn onclick="event.stopPropagation();add(${p.id})">В КОРЗИНУ</div>`;
-   g.appendChild(d);
+  let d=document.createElement('div');
+  d.className='card';
+  d.innerHTML=`
+   <div class=pic><img id="i${p.id}"></div>
+   <div class=name>${p.name}</div>
+   <div class=row>
+    <div class=price>${p.price}₽</div>
+    <div class=btn onclick="add(${p.id})">В КОРЗИНУ</div>
+   </div>`;
+  g.appendChild(d);
+  if(p.img) fetch('/api/file/'+p.img).then(r=>r.json()).then(j=>{
+   let im=document.getElementById('i'+p.id);
+   if(im) im.src=j.url
+  });
  }
  upd();
 }
-function openProd(id){
- let p=prods.find(x=>x.id==id); if(!p)return;
- let imgUrl=''; // будет загружен
- fetch('/api/file/'+p.img).then(r=>r.json()).then(j=>{ document.getElementById('mimg').src=j.url; }).catch(()=>{});
- document.getElementById('modal').style.display='flex';
- document.getElementById('modalInner').innerHTML=`
- <div style="display:flex;justify-content:space-between;font-weight:900"><span>${p.name.toUpperCase()}</span><span style="cursor:pointer" onclick="closeModal()">✕</span></div>
- <div class=pic style="margin:10px 0;aspect-ratio:1"><img id="mimg" src="" style="width:100%;height:100%;object-fit:contain"></div>
- <div style="font-weight:900;font-family:monospace">Размер: ${p.size||'ONE SIZE'} • Цена: ${p.price} ₽</div>
- <div style="margin:8px 0;font-size:14px">${p.desc||'Винтаж 1/1, без возврата. Пахнет улицей и свободой.'}</div>
- <div class=btn onclick="add(${p.id});closeModal()">В КОРЗИНУ • ${p.price} ₽</div>`;
- // загрузить картинку сразу
- fetch('/api/file/'+p.img).then(r=>r.json()).then(j=>{let im=document.getElementById('mimg'); if(im) im.src=j.url});
+function add(id){
+ let p=prods.find(x=>x.id==id);
+ cart.push(p);
+ localStorage.setItem('gcfinal',JSON.stringify(cart));
+ upd();openCart();
 }
-function closeModal(){document.getElementById('modal').style.display='none'}
-function add(id){let p=prods.find(x=>x.id==id); cart.push(p); save(); upd(); openCart();}
-function save(){localStorage.setItem('gc_cart',JSON.stringify(cart))}
-function upd(){document.getElementById('cnt').innerText=cart.length; document.getElementById('cnum').innerText=cart.length; let sum=cart.reduce((s,c)=>s+(parseInt(c.price)||0),0); document.getElementById('csum').innerText=sum; document.getElementById('clist').innerHTML=cart.map((c,i)=>`${i+1}. ${c.name} ${c.size||''} - ${c.price}₽ <span style="cursor:pointer;color:red" onclick="removeItem(${i})"> [x]</span>`).join('<br>')||'Пусто';}
-function removeItem(i){cart.splice(i,1); save(); upd();}
-function openCart(){document.getElementById('cart').style.display='block'; upd();}
-function showCheckout(){if(!cart.length)return alert('Корзина пустая'); document.getElementById('checkout').style.display='block'; document.getElementById('toCheckout').style.display='none';}
-
+function upd(){
+ document.getElementById('cnt').innerText=cart.length;
+ let s=cart.reduce((a,c)=>a+(+c.price||0),0);
+ document.getElementById('csum').innerText=s;
+ document.getElementById('clist').innerHTML=cart.map((c,i)=>`${c.name} ${c.price}₽ <span onclick="cart.splice(${i},1);localStorage.setItem('gcfinal',JSON.stringify(cart));upd()" style="color:red">[x]</span>`).join('<br>')||'Пусто';
+}
+function openCart(){document.getElementById('cart').style.display='block';upd();}
 async function sendOrder(){
- let name=document.getElementById('cname').value.trim();
- let phone=document.getElementById('cphone').value.trim();
- let addr=document.getElementById('caddr').value.trim();
- if(!name||!phone) return alert('Введи имя и телефон');
- let sum=cart.reduce((s,c)=>s+(parseInt(c.price)||0),0);
- let items=cart.map(c=>`• ${c.name} ${c.size||''} ${c.price}₽`).join('\\n');
- let text=`🔥 НОВЫЙ ЗАКАЗ GOOFY CULTURE\\n\\nКлиент: ${name}\\nТГ/Тел: ${phone}\\nАдрес: ${addr}\\n\\nТовары:\\n${items}\\n\\nИтого: ${sum}₽`;
- try{
-  // пробуем отправить на бекенд, если у тебя есть /api/order
-  let r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone,addr,items:cart,sum,text})});
-  if(r.ok){ alert('Заказ отправлен! Менеджер напишет в ТГ @'+TG_USERNAME); cart=[]; save(); upd(); document.getElementById('cart').style.display='none'; return; }
- }catch(e){}
- // fallback - открыть твой ТГ с текстом
- let url=`https://t.me/${TG_USERNAME}?text=${encodeURIComponent(text)}`;
- window.open(url,'_blank');
- alert('Открой чат с @'+TG_USERNAME+' и нажми Отправить — заказ уже написан!');
-}
-
-load();
-</script>
-</body>
-</html>
+ let sum=cart.reduce((a,c)=>a+(+c.price||0),0);
+ let text=`🔥 ЗАКАЗ GOOFY\n${cart.map(c=>`• ${c.name} ${c.price}₽`).join('\n')}\
