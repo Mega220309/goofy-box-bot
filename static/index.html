@@ -3,56 +3,8 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Goofy Culture BOX</title>
-<link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=IBM+Plex+Mono:wght@700&family=Inter:wght@800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Covered+By+Your+Grace&family=IBM+Plex+Mono:wght@700&family=Inter:wght@900&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#d8c9a7;--card:#e9dcc0;--ink:#111;--tape:#e8d5a3;--red:#c91e1e}
-*{box-sizing:border-box}body{margin:0;background:#c7b78f url('https://www.transparenttextures.com/patterns/cardboard-flat.png');color:var(--ink);font-family:'Inter',sans-serif}
-.top{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:4px solid #000;display:flex;justify-content:space-between;align-items:center;padding:14px 16px}
-.logo{font-family:'Covered By Your Grace';font-size:32px;line-height:1;background:#fff;border:3px solid #000;padding:6px 18px;transform:rotate(-2deg);box-shadow:5px 5px 0 #000}
-.badge{border:3px solid #000;background:#fff;padding:8px 14px;font-weight:900;box-shadow:4px 4px 0 #000}
-.hero{padding:18px 16px;font-family:'IBM Plex Mono';border-bottom:4px dashed #000;display:flex;justify-content:space-between}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px}
-@media(min-width:800px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
-.card{background:var(--card);border:3px solid #000;box-shadow:7px 7px 0 #000;position:relative;padding:10px;transform:rotate(-0.6deg)}
-.card:nth-child(2n){transform:rotate(.6deg)}.card:nth-child(3n){transform:rotate(-1deg)}
-.imgwrap{background:#fff;border:3px solid #000;aspect-ratio:1;overflow:hidden;position:relative}
-.imgwrap img{width:100%;height:100%;object-fit:cover}
-.tape{position:absolute;top:-12px;left:12px;background:var(--tape);border:2px solid #000;padding:2px 14px;font-family:'Covered By Your Grace';font-size:18px;transform:rotate(-4deg);box-shadow:2px 2px 0 #000}
-.stamp{position:absolute;top:12px;right:10px;border:3px solid var(--red);color:var(--red);font-family:'IBM Plex Mono';font-weight:700;font-size:12px;padding:2px 6px;transform:rotate(12deg);background:#fff9}
-.size{position:absolute;bottom:8px;left:8px;background:#000;color:#fff;font-family:'IBM Plex Mono';font-size:11px;padding:3px 6px}
-.name{font-family:'Covered By Your Grace';font-size:22px;line-height:1;margin:10px 0 2px;min-height:44px}
-.price{font-weight:900;font-size:22px}
-.btn{margin-top:8px;width:100%;background:#111;color:#fff;border:3px solid #000;padding:12px 0;font-weight:900;letter-spacing:.08em;cursor:pointer}
-.btn:active{transform:translate(2px,2px)}
-.frag{position:absolute;bottom:54px;right:-8px;background:#fff;border:2px solid #000;padding:2px 6px;font-size:9px;font-family:'IBM Plex Mono';transform:rotate(-12deg)}
-#empty{grid-column:1/-1;text-align:center;padding:60px 20px;border:4px dashed #000;background:#fff7;font-family:'Covered By Your Grace';font-size:28px}
-.footer{margin-top:30px;border-top:4px solid #000;padding:20px;background:#111;color:#fff;font-family:'IBM Plex Mono';text-align:center}
-</style>
-</head>
-<body>
-<div class="top"><div class="logo">Goofy Culture</div><div class="badge">КОРЗИНА (<span id="cnt">0</span>)</div></div>
-<div class="hero"><span>ТОЛЬКО ОРИГИНАЛ / 1/1 VINTAGE</span><span>FRAGILE 📦</span></div>
-<div class="grid" id="grid"><div id="empty">ОТКРЫВАЮ КОРОБКУ...</div></div>
-<div class="footer">ВСЕ ВЕЩИ - 1 ШТ • ДОСТАВКА ПО РФ • <span style="text-decoration:underline">TELEGRAM @goofy_culture</span></div>
-<script>
-let cart=0;
-async function load(){
- const r=await fetch('/api/products'); let ps=await r.json();
- ps=ps.filter(p=>!p.sold);
- const g=document.getElementById('grid');
- if(!ps.length){g.innerHTML='<div id="empty">КОРОБКА ПУСТАЯ 😭<br><small style="font-family:Inter">Добавь шмот через /add в боте</small></div>'; return;}
- g.innerHTML='';
- for(const p of ps){
-   let imgUrl='';
-   try{const fr=await fetch('/api/file/'+p.img); const fj=await fr.json(); imgUrl=fj.url||''}catch{}
-   const card=document.createElement('div'); card.className='card';
-   const tag=(p.tag||'1 ШТ ОСТАЛОСЬ').toUpperCase();
-   card.innerHTML=`<div class="tape">${p.brand||'GOOFY'}</div><div class="stamp">${tag}</div><div class="imgwrap"><img src="${imgUrl}" onerror="this.src='https://placehold.co/600x600/e9dcc0/111?text=NO+PHOTO'"><div class="size">${p.size||'ONE'}</div></div><div class="name">${p.name||''}</div><div class="price">${p.price} ₽</div><button class="btn">В КОРЗИНУ</button><div class="frag">FRAGILE</div>`;
-   card.querySelector('.btn').onclick=()=>{cart++;document.getElementById('cnt').textContent=cart;card.querySelector('.btn').textContent='ДОБАВЛЕНО ✓'};
-   g.appendChild(card);
- }
-}
-load();
-</script>
-</body>
-</html>
+*{box-sizing:border-box}html,body{margin:0}
+body{background:#b89a6a url('https://www.transparenttextures.com/patterns/cardboard-flat.png');font-family:'Inter',sans-serif;color:#111;overflow-x:hidden}
+.cardboard{max
