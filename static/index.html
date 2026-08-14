@@ -3,62 +3,57 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Goofy Culture BOX</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Permanent+Marker&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@700&display=swap');
 *{box-sizing:border-box}
-body{margin:0;background:#c7b08a;background-image:url('https://www.toptal.com/designers/subtlepatterns/uploads/cardboard.png');font-family:'Patrick Hand',cursive;color:#111}
-.scribble{font-family:'Permanent Marker',cursive}
-.tape-silver{background:linear-gradient(105deg,#c0c0c0 0%,#e8e8e8 25%,#a8a8a8 50%,#d8d8d8 75%,#b0b0b0 100%);box-shadow:inset 0 0 10px rgba(255,255,255,.8), 2px 2px 5px rgba(0,0,0,.3);position:relative;border:1px solid #888}
-.tape-silver::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 3px, rgba(0,0,0,.05) 3px 4px);pointer-events:none}
-.wrap{max-width:520px;margin:0 auto;padding:10px 10px 90px;position:relative}
-.header{background:#d8c4a2;border:2px solid #111;padding:12px 14px;transform:rotate(-.6deg);box-shadow:4px 4px 0 #111;display:flex;justify-content:space-between;align-items:center;position:relative}
-.header::before,.header::after{content:'★';position:absolute;font-size:18px}
-.header::before{top:-8px;right:80px}.header::after{bottom:-10px;left:30px}
-.logo{font-family:'Permanent Marker';font-size:38px;transform:rotate(-2deg);letter-spacing:-1px}
-.subtape{margin:14px -4px;background:linear-gradient(100deg,#b8b8b8,#e0e0e0,#a0a0a0);border:1px solid #222;padding:8px 14px;transform:rotate(-.4deg);font-family:'Patrick Hand';font-weight:900;font-size:18px;letter-spacing:.5px;box-shadow:3px 3px 0 #111;text-transform:uppercase}
-.stamp-red{border:3px solid #b91c1c;color:#b91c1c;font-family:'Permanent Marker';padding:2px 12px;display:inline-block;transform:rotate(-6deg);font-size:22px;margin:8px 0;background:rgba(255,200,200,.4)}
-.catalog-label{text-align:right;font-weight:900;font-size:14px;margin:10px 0;font-family:monospace}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
-.card{background:#fffef8;border:2px solid #111;padding:8px 8px 6px;position:relative;box-shadow:4px 4px 0 #111;transform:rotate(-.7deg)}
-.card:nth-child(even){transform:rotate(.8deg)}
-.card::before{content:'';position:absolute;top:-10px;left:-10px;width:48px;height:22px;background:linear-gradient(105deg,#b0b0b0,#e8e8e8,#a0a0a0);transform:rotate(-28deg);box-shadow:1px 1px 3px rgba(0,0,0,.4);border:1px solid #666;z-index:3}
-.img{width:100%;aspect-ratio:1;background:#fff;border:1.5px solid #111;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
-.img img{width:100%;height:100%;object-fit:contain}
-.name{font-weight:900;font-size:18px;margin:6px 0;text-transform:uppercase;line-height:1}
-.price-row{display:flex;justify-content:space-between;align-items:center;margin-top:4px;border-top:1.5px solid #111;padding-top:4px}
-.price{font-family:monospace;font-weight:900;font-size:22px}
-.barcode{font-family:monospace;font-size:8px;letter-spacing:1px;line-height:1}
-.badge{position:absolute;font-size:11px;font-weight:900;padding:3px 7px;border:1.5px solid #b91c1c;background:#ffe8e0;color:#b91c1c;transform:rotate(-8deg);z-index:4}
-.badge-used{top:55%;left:-8px}
-.badge-left{bottom:38px;right:-4px;background:#fff3cd;border-color:#a16207;color:#a16207}
-.btn-tape{margin:10px -2px 0;background:linear-gradient(100deg,#a8a8a8,#d0d0d0,#a8a8a8);border:1px solid #111;text-align:center;padding:7px;font-weight:900;font-size:16px;cursor:pointer;transform:rotate(-1deg);box-shadow:2px 2px 0 #111;letter-spacing:1px}
-.scribble-line{position:absolute;font-size:20px;opacity:.7;pointer-events:none}
+body{margin:0;background:#b89b78;background-image:radial-gradient(rgba(0,0,0,.08) 1px, transparent 1px),radial-gradient(rgba(0,0,0,.05) 1px, transparent 1px);background-size:20px 20px, 35px 35px;background-position:0 0, 10px 15px;font-family:Arial, sans-serif}
+.wrap{max-width:500px;margin:0 auto;padding:8px 8px 100px;position:relative}
+.duct{position:absolute;width:80px;height:28px;background:linear-gradient(105deg,#9a9a9a,#e5e5e5,#a0a0a0,#d0d0d0);box-shadow:1px 2px 4px rgba(0,0,0,.4);border:1px solid #777;z-index:5;transform:rotate(-12deg)}
+.head{margin:12px 0;background:#d7c2a0;border:3px solid #111;padding:14px 12px;transform:rotate(-.8deg);box-shadow:6px 6px 0 #111;position:relative;z-index:2}
+.head h1{font-family:'Permanent Marker',cursive;font-size:42px;margin:0;transform:rotate(-1deg);letter-spacing:-1px}
+.top-tape{margin:16px -6px;background:linear-gradient(100deg,#9e9e9e 0%,#e0e0e0 20%,#b5b5b5 40%,#d8d8d8 60%,#9a9a9a 100%);border:2px solid #111;padding:12px 10px;transform:rotate(-.3deg);box-shadow:5px 5px 0 #111;font-family:'Permanent Marker',cursive;font-size:18px;text-align:center;line-height:1.1;position:relative}
+.top-tape::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 2px, rgba(0,0,0,.07) 2px 3px)}
+.fragile{border:3.5px solid #c00;color:#c00;font-family:'Permanent Marker';font-size:26px;padding:4px 18px;display:inline-block;transform:rotate(-7deg) translateX(10px);background:rgba(255,230,230,.5);letter-spacing:2px;margin:10px 0}
+.meta{text-align:right;font-family:monospace;font-weight:900;font-size:14px;margin:6px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.card{background:#fffcf0;border:2.5px solid #111;box-shadow:6px 6px 0 #111;padding:7px;position:relative;transform:rotate(-.6deg)}
+.card:nth-child(even){transform:rotate(.7deg)}
+.card .t1,.card .t2{position:absolute;width:42px;height:20px;background:linear-gradient(105deg,#8a8a8a,#e0e0e0,#a0a0a0);border:1px solid #555;box-shadow:1px 1px 3px rgba(0,0,0,.3);z-index:3}
+.card .t1{top:-10px;left:-10px;transform:rotate(-28deg)}.card .t2{top:-8px;right:-8px;transform:rotate(18deg)}
+.pic{width:100%;aspect-ratio:1;border:2px solid #111;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.pic img{width:100%;height:100%;object-fit:cover}
+.title{font-family:'Permanent Marker';font-size:14px;margin:6px 0 0;line-height:1.1;text-transform:uppercase;min-height:32px}
+.price-line{display:flex;justify-content:space-between;align-items:flex-end;border-top:2px solid #111;padding-top:5px;margin-top:6px}
+.price{font-family:monospace;font-weight:900;font-size:20px}
+.bar{font-size:8px;line-height:1;letter-spacing:.5px}
+.badge{position:absolute;bottom:58px;right:-6px;font-size:10px;font-weight:900;padding:4px 8px;border:1.5px solid #a00;background:#ffe9e0;color:#a00;transform:rotate(-6deg);z-index:4}
+.badge.yellow{background:#fff3b0;border-color:#8a6d00;color:#8a6d00}
+.btn{background:linear-gradient(100deg,#9a9a9a,#d0d0d0,#9a9a9a);border:2px solid #111;padding:7px;text-align:center;font-weight:900;font-family:monospace;font-size:13px;margin-top:8px;cursor:pointer;box-shadow:3px 3px 0 #111}
 .bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-.map-card,.info-card{background:#e8dcc6;border:2px solid #111;padding:8px;box-shadow:4px 4px 0 #111;transform:rotate(.4deg);font-size:13px;line-height:1.2}
-.map{width:100%;height:110px;background:#a8d8ea;border:1.5px solid #111;background-image:url('https://i.imgur.com/8QJ4sQa.png');background-size:cover}
-.footer{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#c7b08a;border-top:3px solid #111;display:flex;justify-content:space-around;padding:8px 0;font-weight:900;font-size:12px;z-index:99}
-.empty{grid-column:1/-1;background:#fffef8;border:3px dashed #111;padding:40px;text-align:center;font-size:20px;transform:rotate(-.8deg)}
-#cart{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:94%;max-width:500px;background:#fffef8;border:3px solid #111;padding:12px;display:none;z-index:100;box-shadow:8px 8px 0 #111}
+.inf{background:#e6d3ad;border:2.5px solid #111;box-shadow:5px 5px 0 #111;padding:8px;font-weight:900;font-size:12px;line-height:1.2;transform:rotate(.3deg)}
+.map{width:100%;height:120px;background:#d0e8ff;border:2px solid #111;background-image:linear-gradient(90deg,#b9d6ff 2px, transparent 2px),linear-gradient(#fff 80%, #8ab4ff 80%);position:relative;display:flex;align-items:center;justify-content:center;font-size:36px}
+.footer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:#d7c2a0;border-top:3.5px solid #111;display:flex;justify-content:space-around;padding:10px 0;font-family:monospace;font-weight:900;font-size:10px;z-index:99;box-shadow:0 -4px 0 #111}
+.empty{grid-column:1/-1;background:#fffcf0;border:3px dashed #111;padding:50px 10px;text-align:center;font-family:'Permanent Marker';font-size:20px;transform:rotate(-.5deg)}
+#cart{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:92%;max-width:480px;background:#fffcf0;border:3px solid #111;padding:12px;display:none;z-index:999;box-shadow:8px 8px 0 #111}
+.scribble{font-family:'Caveat',cursive;opacity:.8;position:absolute;pointer-events:none}
 </style>
 </head>
 <body>
+<div class="duct" style="top:2px;left:-8px;transform:rotate(-35deg)"></div>
+<div class="duct" style="top:2px;right:-6px;width:110px"></div>
 <div class="wrap">
-<div class="header"><div class="logo">Goofy Culture</div><div style="display:flex;gap:12px;font-size:26px">🔍 🛒<span id="cnt" style="background:#111;color:#fff;border-radius:50%;padding:2px 8px;font-size:14px">0</span> •••</div></div>
-<div class="subtape tape-silver">ТОЛЬКО ОРИГИНАЛ • ЛУЧШЕ ТВОЕГО БЫВШЕГО</div>
-<div class="stamp-red">FRAGILE</div>
-<div class="catalog-label">КАТАЛОГ • <span id="total">0 ТОВАРА</span></div>
-
+<div class="head"><h1>Goofy Culture</h1><div style="position:absolute;right:10px;top:10px;font-size:22px">🔍 🛒<span id="cnt" style="background:#111;color:#fff;border-radius:50%;padding:2px 7px;font-size:13px">0</span> •••</div></div>
+<div class="top-tape">ТОЛЬКО ОРИГИНАЛ • ЛУЧШЕ ТВОЕГО БЫВШЕГО</div>
+<div class="fragile">FRAGILE</div>
+<div class="meta">КАТАЛОГ • <span id="total">0 ТОВАРА</span></div>
 <div class="grid" id="grid"></div>
-
 <div class="bottom">
-<div class="map-card"><div class="map"></div><div style="margin-top:6px;font-weight:900">• ДОСТАВКА: МОСКВА • ЦЕНТР<br>Точка самовывоза: м.Кузнецкий Мост</div></div>
-<div class="info-card"><div style="font-weight:900">⚠ ВСЕ ВЕЩИ – 1/1 VINTAGE.<br>• БЕЗ ВОЗВРАТА<br>• ПАХНЕТ УЛИЦЕЙ И СВОБОДОЙ</div><div style="margin-top:10px;font-family:monospace;font-size:10px">ANTI-FASHION • GOOFY CULTURE © 2024</div></div>
+<div class="inf"><div class="map">🗺️</div><div style="margin-top:6px">• ДОСТАВКА: МОСКВА • ЦЕНТР<br>Точка самовывоза: м.Кузнецкий Мост</div></div>
+<div class="inf">⚠️ ВСЕ ВЕЩИ – 1/1 VINTAGE.<br>• БЕЗ ВОЗВРАТА<br>• ПАХНЕТ УЛИЦЕЙ И СВОБОДОЙ<br><br><div style="font-size:9px">ANTI-FASHION • GOOFY CULTURE © 2024</div></div>
 </div>
 </div>
-
-<div class="footer"><div>☰ КАТАЛОГ</div><div>♡ ИЗБРАННОЕ</div><div>🛒 КОРЗИНА</div><div>◯ ПРОФИЛЬ</div></div>
-<div id="cart"><b>КОРЗИНА (<span id="cnum">0</span>)</b><div id="clist" style="font-family:monospace;margin:10px 0"></div><div class="btn-tape" onclick="order()">ОФОРМИТЬ В ТГ ✨</div></div>
-
+<div class="footer"><div>📖<br>КАТАЛОГ</div><div>♡<br>ИЗБРАННОЕ</div><div>🛒<br>КОРЗИНА</div><div>◯<br>ПРОФИЛЬ</div></div>
+<div id="cart"><b>КОРЗИНА (<span id="cnum">0</span>)</b><div id="clist" style="font-family:monospace;margin:8px 0"></div><div class="btn" onclick="order()">ОФОРМИТЬ В ТГ ✨</div></div>
 <script>
 let prods=[],cart=[];
 async function load(){
@@ -70,13 +65,8 @@ async function load(){
  for(let p of prods){
    let imgUrl=''; try{let fr=await fetch('/api/file/'+p.img); let j=await fr.json(); imgUrl=j.url;}catch(e){}
    let d=document.createElement('div'); d.className='card';
-   d.innerHTML=`<div class=img>${imgUrl?`<img src="${imgUrl}">`:'📦'}</div>
-   ${p.tag&&p.tag.toLowerCase().includes('used')?'<div class="badge badge-used">USED ★</div>':''}
-   ${p.tag&&p.tag.includes('1 ШТ')?'<div class="badge badge-left">1 ШТ<br>ОСТАЛОСЬ</div>':''}
-   ${p.tag&&p.tag.includes('FRAGILE')&&!p.tag.includes('1 ШТ')&&!p.tag.toLowerCase().includes('used')?'<div class="badge badge-used">FRAGILE ★</div>':''}
-   <div class=name>${p.name.toUpperCase()}</div>
-   <div class=price-row><div class=barcode>||||| ||| ||||<br>${p.id.toString().slice(-6)}</div><div class=price>${p.price} ₽</div></div>
-   <div class=btn-tape onclick="add(${p.id})">В КОРЗИНУ</div>`;
+   let badge = p.tag ? `<div class="badge ${p.tag.includes('1 ШТ')?'yellow':''}">${p.tag}</div>` : '';
+   d.innerHTML=`<div class=t1></div><div class=t2></div><div class=pic>${imgUrl?`<img src="${imgUrl}">`:'📦'}</div>${badge}<div class=title>${p.name.toUpperCase()}</div><div class=price-line><div class=bar>|||| ||| |||||<br>${String(p.id).slice(-6)}</div><div class=price>${p.price} ₽</div></div><div class=btn onclick="add(${p.id})">В КОРЗИНУ</div>`;
    g.appendChild(d);
  }
 }
