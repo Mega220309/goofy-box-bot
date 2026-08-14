@@ -95,4 +95,52 @@ async def cu(c):
 @dp.callback_query(F.data.startswith("sold_"))
 async def cs(c):
     pid=int(c.data.split("_")[1]); ps=load()
-    for p in
+    for p in ps:
+        if p['id']==pid: p['sold']=True; p['sold_at']=time.time()
+    save(ps); await c.message.edit_text("🔥 Продано"); await c.answer()
+@dp.callback_query(F.data.startswith("del_"))
+async def cd(c):
+    pid=int(c.data.split("_")[1]); save([p for p in load() if p['id']!=pid]); await c.message.edit_text("🗑️ Удалил"); await c.answer()
+
+async def api_products(r):
+    ps=load(); alive=[]
+    for p in ps:
+        if status(p)!="expired": cp=p.copy(); cp["status"]=status(p); alive.append(cp)
+    return web.json_response(alive, headers={"Cache-Control":"no-cache"})
+async def api_file(r):
+    f=await bot.get_file(r.match_info['file_id']); return web.json_response({"url":f"https://api.telegram.org/file/bot{TOKEN}/{f.file_path}"})
+async def api_order(r):
+    try:
+        data = await r.json()
+        user = data.get("user", {})
+        items = data.get("items", [])
+        total = data.get("total", 0)
+        ps = load()
+        ordered = [p for p in ps if p["id"] in items]
+        username = user.get("username")
+        name = f"{user.get('first_name','')} {user.get('last_name','')}".strip()
+        uid = user.get("id")
+        mention = f"@{username} ({name})" if username else f"{name} [ID {uid}]"
+        user_link = f"@{username}" if username else f"tg://user?id={uid}"
+        text = f"📦 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: {mention}\n🆔 ID: {uid}\n\n📋 Товары ({len(ordered)}):\n"
+        for p in ordered:
+            text += f"• {p['brand']} {p['name']} - {p['price']}₽ (размер {p.get('size','')})\n"
+        text += f"\n💰 ИТОГО: {total}₽\n\n👉 Напиши ему: {user_link}"
+        kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="💬 Написать клиенту", url=f"https://t.me/{username}" if username else f"tg://user?id={uid}")]]) if username else None
+        await bot.send_message(ADMIN_ID, text, reply_markup=kb)
+        return web.json_response({"ok": True})
+    except Exception as e:
+        print(f"order error: {e}")
+        return web.json_response({"ok": False}, status=500)
+
+app=web.Application()
+app.router.add_get('/api/products', api_products)
+app.router.add_get('/api/file/{file_id}', api_file)
+app.router.add_post('/api/order', api_order)
+app.router.add_get('/', lambda r: web.FileResponse(pathlib.Path(__file__).parent/'static'/'index.html', headers={"Cache-Control":"no-cache"}))
+app.router.add_static('/static/', path=pathlib.Path(__file__).parent/'static')
+
+async def main():
+    runner=web.AppRunner(app); await runner.setup(); await web.TCPSite(runner,'0.0.0.0',int(os.getenv("PORT",8080))).start()
+    await dp.start_polling(bot)
+if __name__=="__main__": asyncio.run(main())
