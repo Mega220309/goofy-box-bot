@@ -1,33 +1,38 @@
+
 <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GOOFY BOX</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
-*{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace}
+*{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace;overflow-x:hidden}
 .wrap{max-width:480px;margin:0 auto;padding-bottom:90px}
 .banner{width:100%;border-bottom:3px solid #111;display:block}
 .head{padding:12px;text-align:center;font-weight:900;border-bottom:3px solid #111}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
-.card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff}
+.card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff;overflow:hidden}
 .pic{aspect-ratio:1;background:#f2f2f2;border-radius:12px;overflow:hidden}
 .pic img{width:100%;height:100%;object-fit:cover}
-.brand{font-size:10px;opacity:.5;font-weight:900;margin-top:6px;text-transform:uppercase}
+.brand{font-size:10px;opacity:.5;font-weight:900;margin-top:6px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .name{font-size:12px;font-weight:900;height:26px;overflow:hidden}
-.price{background:#111;color:#fff;padding:7px 10px;border-radius:9px;display:inline-block;font-weight:900;font-size:11px;margin-top:6px}
+.price{background:#111;color:#fff;padding:7px 10px;border-radius:9px;display:inline-block;font-weight:900;font-size:11px;margin-top:6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .price.sold{background:#111;color:#fff;transform:rotate(-2deg)}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3.5px solid #111;display:flex;justify-content:space-around;padding:14px 0;text-align:center;font-weight:900;font-size:11px;z-index:20}
 #modal{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111}
-.gal{display:flex;gap:12px;overflow-x:auto;padding:12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.gal img{width:85%;aspect-ratio:1;object-fit:cover;border-radius:18px;border:3px solid #111;flex-shrink:0;scroll-snap-align:center;background:#f2f2f2}
+.gal{width:100%;display:flex;gap:12px;overflow-x:auto;padding:12px;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.gal::-webkit-scrollbar{display:none}
+.gal img{flex:0 0 85%;width:85%;aspect-ratio:1;object-fit:cover;border-radius:18px;border:3px solid #111;background:#f2f2f2;scroll-snap-align:center;scroll-snap-stop:always}
 .dots{display:flex;gap:6px;justify-content:center;padding:6px}
-.dots span{width:6px;height:6px;border-radius:50%;background:#ccc}
-.dots span.on{background:#111}
-.btn{width:100%;padding:18px;border-radius:14px;font-weight:900;border:3px solid #111;background:#111;color:#fff;font-size:15px;letter-spacing:.5px}
-.btn:disabled{background:#111;color:#fff}
-.sub{font-size:11px;text-align:center;margin-top:10px;opacity:.5;letter-spacing:.2px}
+.dots span{width:6px;height:6px;border-radius:50%;background:#ccc;transition:.2s}
+.dots span.on{background:#111;width:18px}
+.desc{border:2px solid #111;border-radius:12px;padding:12px;margin:12px 0;font-size:12px;line-height:1.4;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;max-width:100%}
+.btn{width:100%;padding:18px;border-radius:14px;font-weight:900;border:3px solid #111;background:#111;color:#fff;font-size:15px;transition:.2s}
+.btn.added{background:#fff;color:#111;border:3px dashed #111}
+.sub{font-size:11px;text-align:center;margin-top:10px;opacity:.5}
 </style></head><body><div class="wrap">
-<img src="/static/banner.jpg.WEBP" class="banner" onerror="this.src='./banner.jpg.WEBP'">
+<img src="/static/banner.jpg.WEBP" class="banner" onerror="this.style.display='none'">
 <div class="head">КАТАЛОГ • <span id="cc">0</span> ТОВАРА</div>
 <div class="grid" id="grid"></div>
-</div><div class="nav"><div onclick="window.scrollTo(0,0)">⊞<br>Каталог</div><div>🛒<br>Корзина</div><div onclick="Telegram.WebApp.close()">✕<br>Закрыть</div></div><div id="modal"></div>
+</div><div class="nav"><div onclick="window.scrollTo(0,0)">⊞<br>Каталог</div><div id="cartBtn">🛒<br><span id="cartCount">Корзина</span></div><div onclick="Telegram.WebApp.close()">✕<br>Закрыть</div></div><div id="modal"></div>
 <script>
-let P=[], tg=Telegram.WebApp; tg.ready(); tg.expand();
+let P=[], CART=JSON.parse(localStorage.getItem('goofy_cart')||'[]'), tg=Telegram.WebApp; tg.ready(); tg.expand();
+function saveCart(){localStorage.setItem('goofy_cart',JSON.stringify(CART)); let c=document.getElementById('cartCount'); if(c) c.innerText=CART.length?`Корзина (${CART.length})`:'Корзина';}
+saveCart();
 async function load(){
  try{let r=await fetch('/api/products'); P=await r.json();}catch(e){P=[]}
  document.getElementById('cc').innerText=P.length;
@@ -35,7 +40,7 @@ async function load(){
  if(!P.length){g.innerHTML='<div style="grid-column:1/3;text-align:center;padding:40px;border:2.5px dashed #111;border-radius:16px;font-weight:900">ПУСТО</div>'; return}
  g.innerHTML=P.map(p=>`
   <div class="card" onclick="openM(${p.id})">
-   <div class="pic"><img id="im_${p.id}" src=""></div>
+   <div class="pic"><img id="im_${p.id}" src="" loading="lazy"></div>
    <div class="brand">${(p.brand||'')}</div>
    <div class="name">${p.name}</div>
    ${p.status==='sold_recent'?`<div class="price sold">СП*ЗДИЛИ? САМ ВИНОВАТ</div>`:`<div class="price">${p.price}₽</div>`}
@@ -46,30 +51,49 @@ async function load(){
  });
 }
 function openM(id){
- let p=P.find(x=>x.id==id); let imgs=(p.images&&p.images.length?p.images:[p.img]).filter(Boolean);
- let gal=imgs.map((_,i)=>`<img id="g_${id}_${i}" src="">`).join('') || '<div style="width:85%;aspect-ratio:1;background:#eee;border-radius:18px;border:3px solid #111"></div>';
+ let p=P.find(x=>x.id==id); if(!p) return;
+ let imgs=(p.images&&p.images.length?p.images:[p.img]).filter(Boolean);
+ let gal=imgs.map((_,i)=>`<img id="g_${id}_${i}" src="" loading="lazy">`).join('');
  let dots=imgs.map((_,i)=>`<span class="${i==0?'on':''}" id="d_${id}_${i}"></span>`).join('');
+ let inCart=CART.includes(p.id);
  let btn=p.status==='sold_recent'
 ?`<button disabled class=btn>СП*ЗДИЛИ? САМ ВИНОВАТ</button><div class=sub>10ч и его нет. Как и твоих отмазок купить оригинал</div>`
- :`<button class=btn>КУПИТЬ ЗА ${p.price}₽</button><div class=sub>Оригинал • Доставка по РФ</div>`;
+ :`<button id="buy_${id}" class="btn ${inCart?'added':''}" onclick="addToBox(${id},${p.price})">${inCart?`+1 К СТИЛЮ, -${p.price} К ГРУСТИ`:'ПОЛОЖИТЬ В КОРОБКУ.'}</button><div class=sub>${inCart?'Уже в коробке • Нажми еще раз чтобы убрать':'Оригинал • Доставка по РФ'}</div>`;
  document.getElementById('modal').innerHTML=`
-  <div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff;z-index:2"><b>${p.name}</b><span onclick="document.getElementById('modal').style.display='none'" style="font-size:26px">✕</span></div>
-  <div class="gal" id="gal_${id}" onscroll="updDots(${id})">${gal}</div>
-  <div class="dots" id="dots_${id}">${dots}</div>
-  <div style="padding:14px">
-   <div style="font-weight:900;opacity:.5;font-size:11px">${p.brand?.toUpperCase()}</div>
-   <h2 style="margin:4px 0">${p.name}</h2>
-   <div style="opacity:.7;font-size:13px;margin:6px 0">Размер: ${p.size||''} ${p.tag?'• '+p.tag:''}</div>
-   ${p.description?`<div style="border:2px solid #111;border-radius:12px;padding:10px;margin:12px 0;font-size:12px;line-height:1.4;white-space:pre-wrap">${p.description}</div>`:''}
+  <div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff;z-index:2"><b style="max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</b><span onclick="document.getElementById('modal').style.display='none'" style="font-size:26px;cursor:pointer">✕</span></div>
+  <div class="gal" id="gal_${id}" onscroll="updDots(${id})">${gal||'<div style="flex:0 0 85%;aspect-ratio:1;background:#eee;border-radius:18px;border:3px solid #111"></div>'}</div>
+  <div class="dots">${dots}</div>
+  <div style="padding:14px;max-width:100%;overflow:hidden">
+   <div style="font-weight:900;opacity:.5;font-size:11px;overflow:hidden;text-overflow:ellipsis">${p.brand?.toUpperCase()||''}</div>
+   <h2 style="margin:4px 0;word-break:break-word">${p.name}</h2>
+   <div style="opacity:.7;font-size:13px;margin:6px 0">Размер: ${p.size||(p.sizes||[]).join(', ')} ${p.tag?'• '+p.tag:''}</div>
+   ${p.description?`<div class="desc">${p.description}</div>`:''}
    <h2 style="margin:12px 0">${p.price}₽</h2>
    <div style="margin-top:12px">${btn}</div>
   </div>`;
  document.getElementById('modal').style.display='block';
- imgs.forEach(async(fid,i)=>{try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); document.getElementById(`g_${id}_${i}`).src=jj.url;}catch(e){}});
+ imgs.forEach(async(fid,i)=>{try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); let el=document.getElementById(`g_${id}_${i}`); if(el) el.src=jj.url;}catch(e){}});
+}
+function addToBox(id,price){
+ let btn=document.getElementById('buy_'+id);
+ if(CART.includes(id)){
+  CART=CART.filter(x=>x!=id);
+  btn.innerText='ПОЛОЖИТЬ В КОРОБКУ.';
+  btn.classList.remove('added');
+  btn.nextElementSibling.innerText='Оригинал • Доставка по РФ';
+ }else{
+  CART.push(id);
+  btn.innerText=`+1 К СТИЛЮ, -${price} К ГРУСТИ`;
+  btn.classList.add('added');
+  btn.nextElementSibling.innerText='В коробке, бро 🔥';
+  if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+ }
+ saveCart();
 }
 function updDots(id){
  let gal=document.getElementById('gal_'+id); if(!gal) return;
- let idx=Math.round(gal.scrollLeft / (gal.clientWidth*0.88));
+ let w=gal.clientWidth*0.85+12;
+ let idx=Math.round(gal.scrollLeft / w);
  document.querySelectorAll(`[id^="d_${id}_"]`).forEach((el,i)=>{el.className=i==idx?'on':''});
 }
 load();
