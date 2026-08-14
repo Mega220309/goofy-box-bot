@@ -7,63 +7,58 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#d4b896;background-image:url('https://i.ibb.co/3m6J0nWQ/cardboard.jpg');font-family:'Permanent Marker',cursive}
-.top{max-width:520px;margin:0 auto;padding:14px 10px}
-.header-tape{background:#e8dcc6;border:2px solid #111;transform:rotate(-1deg);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:4px 4px 0 #111;position:relative}
-.header-tape::before{content:'';position:absolute;top:-10px;left:20px;width:80px;height:24px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);opacity:.9;transform:rotate(-3deg)}
-.h1{font-family:'Caveat',cursive;font-size:32px;margin:0;transform:rotate(-1deg)}
-.icons{display:flex;gap:12px;font-size:22px}
-.tape2{margin:14px 0;background:linear-gradient(90deg,#c8c8c8,#b8b8b8);border:1px dashed #111;padding:8px 12px;transform:rotate(.5deg);font-family:monospace;font-weight:900;font-size:13px;letter-spacing:.5px;box-shadow:3px 3px 0 #111}
-.fragile{display:inline-block;border:3px solid #b4231e;color:#b4231e;padding:2px 10px;transform:rotate(-8deg);font-weight:900;font-size:18px;margin:10px 0;letter-spacing:1px}
-.grid{max-width:520px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:10px}
-.card{background:#fdfbf3;border:2px solid #111;position:relative;transform:rotate(-1deg);box-shadow:5px 5px 0 #111;padding:6px}
-.card:nth-child(even){transform:rotate(1deg)}
-.card::before{content:'';position:absolute;top:-10px;left:10px;width:50px;height:20px;background:linear-gradient(180deg,#d0d0d0,#a8a8a8);transform:rotate(-10deg);z-index:2}
-.img{width:100%;aspect-ratio:1;background:#fff;border:1px solid #111;display:flex;align-items:center;justify-content:center;overflow:hidden}
+body{margin:0;background:#cbb490;font-family:'Permanent Marker',cursive}
+body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg, rgba(0,0,0,.04) 0 1px, transparent 1px 4px),repeating-linear-gradient(90deg, rgba(0,0,0,.03) 0 2px, transparent 2px 6px);pointer-events:none;z-index:0}
+.top{max-width:520px;margin:0 auto;padding:14px 10px;position:relative;z-index:1}
+.header-tape{background:#e8dcc6;border:2.5px solid #111;transform:rotate(-1deg);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:5px 5px 0 #111;position:relative}
+.header-tape::before{content:'';position:absolute;top:-12px;left:30px;width:90px;height:26px;background:#b0b0b0;transform:rotate(-4deg);border-left:2px dashed #777;border-right:2px dashed #777}
+.h1{font-family:'Caveat',cursive;font-size:34px;margin:0}
+.icons{font-size:22px;display:flex;gap:10px;align-items:center}
+.tape2{margin:14px 0;background:#c2c2c2;border:1.5px solid #111;padding:9px 14px;transform:rotate(.6deg);font-family:monospace;font-weight:900;font-size:13px;box-shadow:3px 3px 0 #111;letter-spacing:.3px}
+.fragile{display:inline-block;border:3px solid #c1271a;color:#c1271a;padding:3px 14px;transform:rotate(-8deg);font-weight:900;font-size:20px;margin:12px 0}
+.sub{font-family:monospace;font-size:12px;text-align:right;margin-bottom:6px;font-weight:700}
+.grid{max-width:520px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:12px;position:relative;z-index:1}
+.card{background:#fdfbf3;border:2.5px solid #111;position:relative;transform:rotate(-1deg);box-shadow:6px 6px 0 #111;padding:7px}
+.card:nth-child(even){transform:rotate(1.2deg)}
+.card::before{content:'';position:absolute;top:-12px;left:14px;width:52px;height:22px;background:#b8b8b8;transform:rotate(-10deg);z-index:2;border:1px solid #888}
+.img{width:100%;aspect-ratio:1;background:#fff;border:1.5px solid #111;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:42px}
 .img img{width:100%;height:100%;object-fit:cover}
-.name{font-size:16px;margin:6px 0 2px;line-height:1}
+.name{font-size:16px;margin:8px 0 4px;line-height:1.1;text-transform:uppercase}
 .price{font-family:monospace;font-size:20px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
-.stamp{position:absolute;bottom:58px;right:6px;background:#ffe8e0;border:1.5px solid #b4231e;color:#b4231e;font-size:10px;padding:2px 6px;transform:rotate(-12deg);font-weight:900}
-.btn{margin-top:6px;background:linear-gradient(180deg,#d0d0d0,#b0b0b0);border:1.5px solid #111;padding:6px;text-align:center;font-size:14px;box-shadow:2px 2px 0 #111;cursor:pointer}
+.stamp{position:absolute;bottom:64px;right:8px;background:#ffe8e0;border:1.5px solid #c1271a;color:#c1271a;font-size:10px;padding:3px 7px;transform:rotate(-12deg);font-weight:900}
+.btn{margin-top:8px;background:#c8c8c8;border:1.8px solid #111;padding:8px;text-align:center;font-size:14px;box-shadow:3px 3px 0 #111;cursor:pointer}
 .btn:active{transform:translate(2px,2px);box-shadow:none}
-.empty{grid-column:1/-1;background:#fdfbf3;border:3px dashed #111;padding:30px;text-align:center;transform:rotate(-.5deg)}
-.cart{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#e8dcc6;border-top:3px solid #111;padding:12px;display:none;z-index:99;box-shadow:0 -4px 0 #111}
+.empty{grid-column:1/-1;background:#fdfbf3;border:3px dashed #111;padding:36px;text-align:center;transform:rotate(-.5deg);font-size:18px}
+.cart{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#e8dcc6;border-top:3px solid #111;padding:12px;display:none;z-index:99;box-shadow:0 -5px 0 #111}
 </style>
 </head>
 <body>
 <div class="top">
-<div class="header-tape"><div class="h1">✈️ Goofy Culture ⭐</div><div class="icons">🔍 🛒<span id="cnt" style="background:#111;color:#fff;border-radius:50%;padding:0 6px;font-size:14px;margin-left:-6px">0</span></div></div>
+<div class="header-tape"><div class="h1">✈️ Goofy Culture ⭐</div><div class="icons">🔍 🛒 <span id="cnt" style="background:#111;color:#fff;border-radius:50%;padding:1px 7px;font-size:14px">0</span></div></div>
 <div class="tape2">ТОЛЬКО ОРИГИНАЛ • ЛУЧШЕ ТВОЕГО БЫВШЕГО • FRAGILE</div>
 <div class="fragile">FRAGILE</div>
-<div style="font-family:monospace;font-size:12px;text-align:right;margin-bottom:6px;">КАТАЛОГ • <span id="total">0 ТОВАРА</span> ⭐</div>
+<div class="sub">КАТАЛОГ • <span id="total">0 ТОВАРА</span> ⭐</div>
 </div>
 <div class="grid" id="grid"></div>
-<div class="cart" id="cart"><b>КОРЗИНА (<span id="cnum">0</span>)</b><div id="clist"></div><div class="btn" onclick="order()">ОФОРМИТЬ В ТГ ✨</div></div>
+<div class="cart" id="cart"><b>КОРЗИНА (<span id="cnum">0</span>)</b><div id="clist" style="font-family:monospace;margin:8px 0"></div><div class="btn" onclick="order()">ОФОРМИТЬ В ТГ ✨</div></div>
 <script>
 let prods=[],cart=[];
 async function load(){
  let r=await fetch('/api/products'); prods=await r.json();
  document.getElementById('total').innerText=prods.length+' ТОВАРА';
  let g=document.getElementById('grid');
- if(!prods.length){g.innerHTML='<div class=empty>КОРОБКА ПУСТАЯ 😭<br><br>Добавь шмот через /add в боте</div>';return}
+ if(!prods.length){g.innerHTML='<div class=empty>КОРОБКА ПУСТАЯ 😭<br><br>Добавь шмот через /ADD в боте</div>';return}
  g.innerHTML='';
  for(let p of prods){
    let imgUrl=''; try{let fr=await fetch('/api/file/'+p.img); let j=await fr.json(); imgUrl=j.url;}catch(e){}
    let d=document.createElement('div'); d.className='card';
-   d.innerHTML=`<div class=img>${imgUrl?`<img src="${imgUrl}">`:'📦'}</div>
-   <div class=name>${p.name.toUpperCase()}</div>
-   <div class=price><span>${p.price} ₽</span><span style="font-size:10px">${p.size}</span></div>
-   ${p.tag?`<div class=stamp>${p.tag}</div>`:''}
-   <div class=btn onclick="add(${p.id})">В КОРЗИНУ</div>`;
+   d.innerHTML=`<div class=img>${imgUrl?`<img src="${imgUrl}">`:'📦'}</div><div class=name>${p.name}</div><div class=price><span>${p.price} ₽</span><span style="font-size:12px">${p.size}</span></div>${p.tag?`<div class=stamp>${p.tag}</div>`:''}<div class=btn onclick="add(${p.id})">В КОРЗИНУ</div>`;
    g.appendChild(d);
  }
 }
 function add(id){let p=prods.find(x=>x.id==id); cart.push(p); upd()}
-function upd(){document.getElementById('cnt').innerText=cart.length; document.getElementById('cnum').innerText=cart.length;
- document.getElementById('cart').style.display=cart.length?'block':'none';
- document.getElementById('clist').innerHTML=cart.map(c=>c.name+' - '+c.price+'₽').join('<br>');
-}
-function order(){let txt=cart.map(c=>c.name+' '+c.size+' '+c.price+'₽').join('%0A'); window.open('https://t.me/goofy_culture?text='+txt)}
+function upd(){document.getElementById('cnt').innerText=cart.length; document.getElementById('cnum').innerText=cart.length; document.getElementById('cart').style.display=cart.length?'block':'none'; document.getElementById('clist').innerHTML=cart.map(c=>c.name+' - '+c.price+'₽').join('<br>')}
+function order(){let txt=cart.map(c=>c.name+' '+c.size+' '+c.price+'₽').join('%0A'); window.open('https://t.me/goofy_culture?text=Заказ:%0A'+txt)}
 load();
 </script>
 </body>
