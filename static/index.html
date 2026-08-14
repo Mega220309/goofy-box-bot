@@ -12,7 +12,6 @@
 .price{background:#111;color:#fff;padding:7px 10px;border-radius:9px;display:inline-block;font-weight:900;font-size:11px;margin-top:6px}
 .price.sold{transform:rotate(-2deg)}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3.5px solid #111;display:flex;justify-content:space-around;padding:10px 0;text-align:center;font-weight:900;font-size:11px;z-index:20}
-.nav div{cursor:pointer}
 #modal,#cartModal{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111}
 .gal{width:100%;display:flex;gap:12px;overflow-x:auto;padding:12px;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none}
 .gal::-webkit-scrollbar{display:none}
@@ -47,7 +46,6 @@ function playBoxSound(){
  try{
   if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
   let t=audioCtx.currentTime;
-  // хруст коробки: 3 коротких нойза + скотч
   for(let i=0;i<3;i++){
    let buffer=audioCtx.createBuffer(1, audioCtx.sampleRate*0.08, audioCtx.sampleRate);
    let data=buffer.getChannelData(0);
@@ -57,17 +55,12 @@ function playBoxSound(){
    let gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.6, t+i*0.08); gain.gain.exponentialRampToValueAtTime(0.01, t+i*0.08+0.08);
    src.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination); src.start(t+i*0.08);
   }
-  // щелчок скотча в конце
   let osc=audioCtx.createOscillator(); osc.frequency.setValueAtTime(180, t+0.28); osc.frequency.exponentialRampToValueAtTime(40, t+0.35);
   let g2=audioCtx.createGain(); g2.gain.setValueAtTime(0.8, t+0.28); g2.gain.exponentialRampToValueAtTime(0.01, t+0.35);
   osc.connect(g2); g2.connect(audioCtx.destination); osc.start(t+0.28); osc.stop(t+0.36);
  }catch(e){}
 }
-function saveCart(){
- localStorage.setItem('goofy_cart',JSON.stringify(CART));
- let el=document.getElementById('cartCount');
- if(el) el.innerText=CART.length?`Коробка (${CART.length})`:'Коробка с вещами';
-}
+function saveCart(){localStorage.setItem('goofy_cart',JSON.stringify(CART)); let el=document.getElementById('cartCount'); if(el) el.innerText=CART.length?`Коробка (${CART.length})`:'Коробка с вещами';}
 saveCart();
 async function load(){
  try{let r=await fetch('/api/products'); P=await r.json();}catch(e){P=[]}
@@ -84,42 +77,26 @@ function openM(id){
  let dots=imgs.map((_,i)=>`<span class="${i==0?'on':''}" id="d_${id}_${i}"></span>`).join('');
  let inCart=CART.includes(p.id);
  let btn=p.status==='sold_recent'?`<button disabled class=btn>СП*ЗДИЛИ? САМ ВИНОВАТ</button><div class=sub>10ч и его нет. Как и твоих отмазок купить оригинал</div>`:`<button id="buy_${id}" class="btn ${inCart?'added':''}" onclick="addToBox(${id},${p.price})">${inCart?`+1 К СТИЛЮ, -${p.price} К ГРУСТИ`:'ПОЛОЖИТЬ В КОРОБКУ.'}</button><div class=sub>${inCart?'Уже в коробке • Жми еще раз чтобы убрать':'Оригинал • Доставка по РФ'}</div>`;
- document.getElementById('modal').innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff;z-index:2"><b>${p.name}</b><span onclick="closeAll()" style="font-size:26px;cursor:pointer">✕</span></div><div class="gal" id="gal_${id}" onscroll="updDots(${id})">${gal}</div><div class="dots">${dots}</div><div style="padding:14px"><div style="font-weight:900;opacity:.5;font-size:11px">${p.brand?.toUpperCase()||''}</div><h2 style="word-break:break-word">${p.name}</h2><div style="opacity:.7;font-size:13px;margin:6px 0">Размер: ${p.size||''} ${p.tag?'• '+p.tag:''}</div>${p.description?`<div class="desc">${p.description}</div>`:''}<h2>${p.price}₽</h2><div style="margin-top:12px">${btn}</div></div>`;
+ document.getElementById('modal').innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff;z-index:2"><b style="font-size:11px;letter-spacing:.8px;opacity:.6;text-transform:lowercase">посмотрите на это чудо поближеееееееееее</b><span onclick="closeAll()" style="font-size:26px;cursor:pointer">✕</span></div><div class="gal" id="gal_${id}" onscroll="updDots(${id})">${gal}</div><div class="dots">${dots}</div><div style="padding:14px"><div style="font-weight:900;opacity:.5;font-size:11px">${p.brand?.toUpperCase()||''}</div><h2 style="word-break:break-word">${p.name}</h2><div style="opacity:.7;font-size:13px;margin:6px 0">Размер: ${p.size||''} ${p.tag?'• '+p.tag:''}</div>${p.description?`<div class="desc">${p.description}</div>`:''}<h2>${p.price}₽</h2><div style="margin-top:12px">${btn}</div></div>`;
  document.getElementById('modal').style.display='block';
  imgs.forEach(async(fid,i)=>{try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); let el=document.getElementById(`g_${id}_${i}`); if(el) el.src=jj.url;}catch(e){}});
 }
 function addToBox(id,price){
  let btn=document.getElementById('buy_'+id);
- let wasIn=CART.includes(id);
- if(wasIn){
-  CART=CART.filter(x=>x!=id);
-  btn.innerText='ПОЛОЖИТЬ В КОРОБКУ.'; btn.classList.remove('added'); btn.nextElementSibling.innerText='Оригинал • Доставка по РФ';
+ if(CART.includes(id)){
+  CART=CART.filter(x=>x!=id); btn.innerText='ПОЛОЖИТЬ В КОРОБКУ.'; btn.classList.remove('added'); btn.nextElementSibling.innerText='Оригинал • Доставка по РФ';
  }else{
-  playBoxSound();
-  CART.push(id);
-  btn.innerText=`+1 К СТИЛЮ, -${price} К ГРУСТИ`; btn.classList.add('added'); btn.nextElementSibling.innerText='В коробке, бро 🔥';
+  playBoxSound(); CART.push(id); btn.innerText=`+1 К СТИЛЮ, -${price} К ГРУСТИ`; btn.classList.add('added'); btn.nextElementSibling.innerText='В коробке, бро 🔥';
   if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
  }
- saveCart();
- if(document.getElementById('cartModal').style.display==='block') renderCart();
+ saveCart(); if(document.getElementById('cartModal').style.display==='block') renderCart();
 }
 function openCart(){renderCart(); document.getElementById('cartModal').style.display='block';}
 function closeAll(){document.getElementById('modal').style.display='none'; document.getElementById('cartModal').style.display='none';}
 function renderCart(){
- let cm=document.getElementById('cartModal');
- let items=P.filter(p=>CART.includes(p.id));
- let total=items.reduce((s,p)=>s+p.price,0);
- if(!items.length){
-  cm.innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b>КОРОБКА С ВЕЩАМИ</b><span onclick="closeAll()" style="font-size:26px">✕</span></div><div style="padding:40px;text-align:center;font-weight:900">КОРОБКА ПУСТАЯ<br><span style="font-size:11px;opacity:.5">Положи что-нибудь, бро</span></div>`;
-  return;
- }
- cm.innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff"><b>КОРОБКА С ВЕЩАМИ • ${items.length}</b><span onclick="closeAll()" style="font-size:26px">✕</span></div>
-  ${items.map(p=>`<div class="cart-item"><img id="c_${p.id}" src=""><div style="flex:1;overflow:hidden"><div style="font-size:10px;opacity:.5;font-weight:900">${p.brand}</div><div style="font-weight:900;word-break:break-word">${p.name}</div><div style="opacity:.7;font-size:11px">${p.size||''}</div><div style="font-weight:900;margin-top:4px">${p.price}₽</div></div><div onclick="addToBox(${p.id},${p.price});renderCart()" style="font-size:22px;cursor:pointer">✕</div></div>`).join('')}
-  <div style="padding:14px;border-top:3px solid #111;position:sticky;bottom:0;background:#fff">
-   <div style="display:flex;justify-content:space-between;font-weight:900;margin-bottom:12px"><span>ИТОГО:</span><span>${total}₽</span></div>
-   <button class="btn" onclick="if(tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success');alert('Заказ: ${total}₽\\nНапиши в ЛС @goofy_culture')">ОФОРМИТЬ КОРОБКУ • ${total}₽</button>
-   <div class="sub">10ч и его нет. Как и твоих отмазок купить оригинал</div>
-  </div>`;
+ let cm=document.getElementById('cartModal'); let items=P.filter(p=>CART.includes(p.id)); let total=items.reduce((s,p)=>s+p.price,0);
+ if(!items.length){cm.innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b>КОРОБКА С ВЕЩАМИ</b><span onclick="closeAll()" style="font-size:26px">✕</span></div><div style="padding:40px;text-align:center;font-weight:900">КОРОБКА ПУСТАЯ<br><span style="font-size:11px;opacity:.5">Положи что-нибудь, бро</span></div>`; return;}
+ cm.innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff"><b>КОРОБКА С ВЕЩАМИ • ${items.length}</b><span onclick="closeAll()" style="font-size:26px">✕</span></div>${items.map(p=>`<div class="cart-item"><img id="c_${p.id}" src=""><div style="flex:1;overflow:hidden"><div style="font-size:10px;opacity:.5;font-weight:900">${p.brand}</div><div style="font-weight:900;word-break:break-word">${p.name}</div><div style="opacity:.7;font-size:11px">${p.size||''}</div><div style="font-weight:900;margin-top:4px">${p.price}₽</div></div><div onclick="addToBox(${p.id},${p.price});renderCart()" style="font-size:22px;cursor:pointer">✕</div></div>`).join('')}<div style="padding:14px;border-top:3px solid #111;position:sticky;bottom:0;background:#fff"><div style="display:flex;justify-content:space-between;font-weight:900;margin-bottom:12px"><span>ИТОГО:</span><span>${total}₽</span></div><button class="btn" onclick="alert('Заказ: ${total}₽\\nНапиши в ЛС @goofy_culture')">ОФОРМИТЬ КОРОБКУ • ${total}₽</button><div class="sub">10ч и его нет. Как и твоих отмазок купить оригинал</div></div>`;
  items.forEach(async p=>{let fid=p.images&&p.images[0]?p.images[0]:p.img; if(!fid) return; try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); let el=document.getElementById('c_'+p.id); if(el) el.src=jj.url;}catch(e){}});
 }
 function updDots(id){let gal=document.getElementById('gal_'+id); if(!gal) return; let w=gal.clientWidth*0.85+12; let idx=Math.round(gal.scrollLeft/w); document.querySelectorAll(`[id^="d_${id}_"]`).forEach((el,i)=>{el.className=i==idx?'on':''});}
