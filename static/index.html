@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GOOFY BOX</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
 *{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace;overflow-x:hidden}
 .wrap{max-width:480px;margin:0 auto;padding-bottom:90px}
-.banner{width:100%;border-bottom:3px solid #111;display:block}
+.banner{width:100%;border-bottom:3px solid #111;display:block;background:#f2f2f2;min-height:120px}
 .head{padding:14px;text-align:center;font-weight:900;border-bottom:3px solid #111;letter-spacing:1px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
 .card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff}
@@ -38,7 +38,7 @@
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:12px 20px;border-radius:12px;font-weight:900;font-size:12px;z-index:100;opacity:0;pointer-events:none;transition:.4s;border:2px solid #111;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style></head><body><div class="wrap">
-<img src="/static/banner.jpg.WEBP" class="banner" onerror="this.style.display='none'">
+<img src="/static/banner.webp?v=5" class="banner" alt="GOOFY CULTURE">
 <div class="head">КАТАЛОГ</div>
 <div class="grid" id="grid"></div>
 </div>
@@ -111,7 +111,7 @@ function addToBox(id,price){
   window.scrollTo({top:0,behavior:'smooth'});
   if(toast) toast.classList.remove('show');
   if(boxIcon){setTimeout(()=>boxIcon.classList.remove('jump'),600);}
- },1800);
+ },1200);
  if(document.getElementById('cartModal').style.display==='block') renderCart();
 }
 function openCart(){renderCart(); document.getElementById('cartModal').style.display='block';}
