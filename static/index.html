@@ -1,39 +1,65 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GOOFY BOX</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
-*{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace;overflow-x:hidden}
+body{margin:0;font-family:monospace;background:#fff;color:#111}
+.banner{width:100%;display:block;border-bottom:3px solid #000}
 .wrap{max-width:480px;margin:0 auto;padding-bottom:90px}
-.banner{width:100%;display:block;border-bottom:3px solid #111;background:#f2f2f2}
-.banner-wrap{position:relative;border-bottom:3px solid #111}
-.secret{position:absolute;top:0;right:0;padding:14px;opacity:.35;font-size:18px;z-index:5}
-.head{padding:14px;text-align:center;font-weight:900;border-bottom:3px solid #111}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
-.card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff;transform:rotate(.2deg)}
+.head{text-align:center;font-weight:900;padding:12px;border-bottom:3px solid #000}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+.card{border:2.5px solid #000;border-radius:14px;padding:8px;transform:rotate(.3deg)}
 .card:nth-child(even){transform:rotate(-.3deg)}
-.pic{aspect-ratio:1;background:#eee;border-radius:12px;overflow:hidden}
+.pic{background:#eee;aspect-ratio:1;border-radius:10px;overflow:hidden}
 .pic img{width:100%;height:100%;object-fit:cover}
-.price-dirty{background:#ffeb3b;color:#111;padding:6px 12px;border-radius:2px 8px 4px 10px;display:inline-block;font-weight:900;font-size:13px;margin-top:6px;transform:rotate(-2deg);box-shadow:2px 2px 0 #111;font-family:'Comic Sans MS',cursive;border:1px dashed #111;position:relative}
-.price-dirty:after{content:'';position:absolute;top:-4px;left:20%;width:30px;height:12px;background:rgba(255,255,255,.7);transform:rotate(-8deg);border-left:1px solid #ccc;border-right:1px solid #ccc}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3.5px solid #111;display:flex;justify-content:space-around;padding:12px 0;text-align:center;z-index:20}
-.icon{width:34px;height:34px;border:2.5px solid #111;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;background:#fff;position:relative}
-.icon.box:before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:14px;height:7px;border:2.5px solid #111;border-bottom:0;border-radius:4px 4px 0 0;background:#fff}
-.icon.box.jump{animation:jump.5s}
-@keyframes jump{50%{transform:translateY(-10px)}}
-#modal,#cartModal{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111}
-.gal{display:flex;gap:10px;overflow-x:auto;padding:12px}
-.gal img{flex:0 0 85%;width:85%;aspect-ratio:1;object-fit:cover;border:3px solid #111;border-radius:16px}
-.btn{width:100%;padding:16px;border-radius:12px;font-weight:900;border:3px solid #111;background:#111;color:#fff;margin-top:8px}
-.btn2{width:100%;padding:14px;border-radius:12px;font-weight:900;border:2.5px dashed #111;background:#fff;color:#111;margin-top:8px}
-.btn.added{background:#fff;color:#111;border-style:dashed}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:10px;font-weight:900;opacity:0;transition:.3s;pointer-events:none;z-index:100}
-.toast.show{opacity:1}
-.shake{animation:shake.3s}
-@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-.flex{margin:12px;border:2.5px solid #111;border-radius:12px;padding:10px}
-.bar{height:14px;background:#eee;border:2px solid #111;border-radius:7px;overflow:hidden;margin-top:6px}
-.fill{height:100%;background:#111;width:0%;transition:.5s}
-.conf{position:fixed;top:-10px;width:8px;height:12px;background:#111;animation:fall 1.2s linear forwards;pointer-events:none;z-index:200}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-.bomzh-fit{margin:12px;border:2.5px solid #111;border-radius:12px;overflow:hidden;display:none;background:#111}
-.bomzh-fit img{width:100%;display:block;filter:contrast(1.1) sepia(.2)}
-.bomzh-fit div{padding:8px;background:#ffeb3b;font-weight:900;font-size:11px;text-align:center}
-.review{margin:12px;border:2px solid #111;border-radius:12px;padding:10px;background:#f9f9f9}
-.review-head
+.dirty{background:#ffeb3b;border:1.5px dashed #000;padding:5px 10px;border-radius:3px 9px 3px 9px;transform:rotate(-2deg);display:inline-block;font-weight:900;margin-top:5px;box-shadow:2px 2px 0 #000}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3px solid #000;display:flex;justify-content:space-around;padding:10px 0;text-align:center}
+.btn{width:100%;padding:14px;border-radius:10px;font-weight:900;border:3px solid #000;background:#000;color:#fff;margin-top:8px}
+.btn2{width:100%;padding:12px;border-radius:10px;font-weight:900;border:2.5px dashed #000;background:#fff;color:#000;margin-top:8px}
+#modal,#cart{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #000;border-right:3px solid #000}
+.gal{display:flex;gap:8px;overflow-x:auto;padding:10px}
+.gal img{flex:0 0 85%;border:3px solid #000;border-radius:12px;aspect-ratio:1;object-fit:cover}
+.review{margin:10px;border:2px solid #000;border-radius:10px;padding:8px;background:#f9f9f9}
+.shake{animation:shake.3s}@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style></head><body>
+<div class="wrap">
+<img src="/static/banner.jpg.WEBP" onerror="this.src='/static/banner.webp'" class="banner">
+<div class="head">КАТАЛОГ</div>
+<div id="grid" class="grid">гружу...</div>
+<div style="border-top:3px solid #000;padding:12px">
+<b>ОТЗЫВЫ БОМЖЕЙ</b>
+<div class="review"><b>Кирилл • Щелково</b> — бро кофта огонь, 2 недели не снимаю</div>
+<div class="review"><b>Артем</b> — думал паль, а ориг за 1200, подарок</div>
+<div class="review"><b>Макс</b> — торговался, скинули 200р, топ</div>
+</div>
+</div>
+<div class="nav">
+<div onclick="closeAll();window.scrollTo(0,0)">⊞<div style="font-size:11px;font-weight:900">Каталог</div></div>
+<div onclick="openCart()">📦<div id="cnt" style="font-size:11px;font-weight:900">Коробка</div></div>
+<div onclick="Telegram.WebApp.close()">×<div style="font-size:11px;font-weight:900">Закрыть</div></div>
+</div>
+<div id="modal"></div><div id="cart"></div>
+<script>
+var P=[], KEY='goofy_v3', CART=[], DISC=0, STEAL=0;
+try{CART=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){CART=[]}
+function save(){localStorage.setItem(KEY,JSON.stringify(CART));document.getElementById('cnt').innerText=CART.length?'Коробка ('+CART.length+')':'Коробка';}
+save();
+async function load(){
+ var g=document.getElementById('grid');
+ try{var r=await fetch('/api/products');P=await r.json();}catch(e){g.innerHTML='ошибка загрузки';return;}
+ if(!P.length){g.innerHTML='пусто';return;}
+ var html='';
+ for(var i=0;i<P.length;i++){var p=P[i];html+='<div class="card" onclick="openM('+p.id+')"><div class="pic"><img id="im_'+p.id+'"></div><div style="font-size:10px;opacity:.5">'+(p.brand||'')+'</div><div style="font-size:12px;font-weight:900;height:26px;overflow:hidden">'+p.name+'</div><div class="dirty">'+p.price+'₽</div></div>';}
+ g.innerHTML=html;
+ for(var i=0;i<P.length;i++){var p=P[i];var fid=(p.images&&p.images[0])?p.images[0]:p.img;if(!fid)continue;(async function(fid,id){try{var rr=await fetch('/api/file/'+fid);var jj=await rr.json();var el=document.getElementById('im_'+id);if(el)el.src=jj.url;}catch(e){}})(fid,p.id);}
+}
+function openM(id){
+ var p=null;for(var i=0;i<P.length;i++)if(P[i].id==id)p=P[i];if(!p)return;
+ var gal='';var imgs=(p.images&&p.images.length?p.images:[p.img]);for(var i=0;i<imgs.length;i++)if(imgs[i])gal+='<img id="g_'+id+'_'+i+'">';
+ var inCart=CART.indexOf(id)>=0;
+ document.getElementById('modal').innerHTML='<div style="padding:10px;display:flex;justify-content:space-between;border-bottom:3px solid #000"><b>ПОБЛИЖЕ</b><span onclick="closeAll()" style="font-size:22px">✕</span></div><div class="gal">'+gal+'</div><div style="padding:12px"><h2>'+p.name+'</h2><div>Размер: '+(p.size||'')+'</div><div class="dirty" style="font-size:18px;margin:10px 0">'+p.price+'₽</div><button class="btn" onclick="addBox('+id+')">'+(inCart?'УБРАТЬ':'В КОРОБКУ')+'</button><button class="btn2" onclick="document.getElementById(\'fit\').style.display=\'block\'">📦 ПРИМЕРЬ НА БОМЖЕ</button><div id="fit" style="display:none;margin-top:10px;border:2px solid #000;border-radius:10px;overflow:hidden"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400" style="width:100%"><div style="padding:6px;background:#ffeb3b;font-weight:900;text-align:center;font-size:11px">ТАК СИДИТ НА УЛИЦЕ • ЩЕЛКОВО СТАЙЛ</div></div></div>';
+ document.getElementById('modal').style.display='block';
+ for(var i=0;i<imgs.length;i++){if(!imgs[i])continue;(async function(fid,ii){try{var rr=await fetch('/api/file/'+fid);var jj=await rr.json();var el=document.getElementById('g_'+id+'_'+ii);if(el)el.src=jj.url;}catch(e){}})(imgs[i],i);}
+}
+function addBox(id){var idx=CART.indexOf(id);if(idx>=0){CART.splice(idx,1);}else{CART.push(id);document.body.classList.add('shake');setTimeout(function(){document.body.classList.remove('shake');},300);}save();closeAll();}
+function closeAll(){document.getElementById('modal').style.display='none';document.getElementById('cart').style.display='none';}
+function openCart(){
+ var items=[];for(var i=0;i<P.length;i++)if(CART.indexOf(P[i].id)>=0)items.push(P[i]);
+ var total=0;for(var i=0;i<items.length;i++)total+=items[i].price;if(DISC)total=Math.round(total*0.9);
+ var flex=0;if(items
