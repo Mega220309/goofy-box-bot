@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GOOFY BOX</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
 *{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace;overflow-x:hidden}
 .wrap{max-width:480px;margin:0 auto;padding-bottom:90px}
-.banner{width:100%;border-bottom:3px solid #111;display:block;background:#f2f2f2;min-height:120px}
+.banner{width:100%;border-bottom:3px solid #111;display:block;background:#f2f2f2;min-height:120px;object-fit:cover}
 .head{padding:14px;text-align:center;font-weight:900;border-bottom:3px solid #111;letter-spacing:1px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
 .card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff}
@@ -38,7 +38,7 @@
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:12px 20px;border-radius:12px;font-weight:900;font-size:12px;z-index:100;opacity:0;pointer-events:none;transition:.4s;border:2px solid #111;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style></head><body><div class="wrap">
-<img src="/static/banner.webp?v=5" class="banner" alt="GOOFY CULTURE">
+<img src="/static/banner.jpg.WEBP?v=6" onerror="this.onerror=null; this.src='/static/banner.webp?v=6'" class="banner" alt="GOOFY CULTURE">
 <div class="head">КАТАЛОГ</div>
 <div class="grid" id="grid"></div>
 </div>
@@ -47,96 +47,4 @@
 <div class="nav-item" onclick="openCart()"><div class="icon box" id="boxIcon"></div><b id="cartCount">Коробка</b></div>
 <div class="nav-item" onclick="Telegram.WebApp.close()"><div class="icon close">×</div><b>Закрыть</b></div>
 </div>
-<div class="toast" id="toast">В КОРОБКЕ 📦</div>
-<div id="modal"></div>
-<div id="cartModal"></div>
-<script>
-let P=[], CART_KEY='goofy_box_v3', CART=[];
-try{CART=[...new Set((JSON.parse(localStorage.getItem(CART_KEY)||'[]')).map(Number))]}catch(e){CART=[]}
-let tg=Telegram.WebApp; tg.ready(); tg.expand();
-let audioCtx;
-function playBoxSound(){
- try{
-  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  let t=audioCtx.currentTime;
-  for(let i=0;i<3;i++){
-   let buffer=audioCtx.createBuffer(1, audioCtx.sampleRate*0.08, audioCtx.sampleRate);
-   let data=buffer.getChannelData(0);
-   for(let j=0;j<data.length;j++) data[j]=(Math.random()*2-1)*Math.pow(1-j/data.length,2);
-   let src=audioCtx.createBufferSource(); src.buffer=buffer;
-   let filter=audioCtx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1200+Math.random()*800;
-   let gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.6, t+i*0.08); gain.gain.exponentialRampToValueAtTime(0.01, t+i*0.08+0.08);
-   src.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination); src.start(t+i*0.08);
-  }
-  let osc=audioCtx.createOscillator(); osc.frequency.setValueAtTime(180, t+0.28); osc.frequency.exponentialRampToValueAtTime(40, t+0.35);
-  let g2=audioCtx.createGain(); g2.gain.setValueAtTime(0.8, t+0.28); g2.gain.exponentialRampToValueAtTime(0.01, t+0.35);
-  osc.connect(g2); g2.connect(audioCtx.destination); osc.start(t+0.28); osc.stop(t+0.36);
- }catch(e){}
-}
-function saveCart(){CART=[...new Set(CART.map(Number))]; localStorage.setItem(CART_KEY,JSON.stringify(CART)); let el=document.getElementById('cartCount'); if(el) el.innerText=CART.length?`Коробка (${CART.length})`:'Коробка';}
-saveCart();
-async function load(){
- try{let r=await fetch('/api/products?t='+Date.now()); P=await r.json();}catch(e){P=[]}
- CART=CART.filter(id=>P.some(p=>Number(p.id)==id)); saveCart();
- let g=document.getElementById('grid');
- if(!P.length){g.innerHTML='<div style="grid-column:1/3;text-align:center;padding:40px;border:2.5px dashed #111;border-radius:16px;font-weight:900">ПУСТОЙ ЯЩИК<br><span style="font-size:11px;opacity:.5">Добавь через /add</span></div>'; return}
- g.innerHTML=P.map(p=>`<div class="card" onclick="openM(${p.id})"><div class="pic"><img id="im_${p.id}" src=""></div><div class="brand">${p.brand||''}</div><div class="name">${p.name}</div>${p.status==='sold_recent'?`<div class="price sold">СП*ЗДИЛИ? САМ ВИНОВАТ</div>`:`<div class="price">${p.price}₽</div>`}</div>`).join('');
- P.forEach(async p=>{let fid=p.images&&p.images[0]?p.images[0]:p.img; if(!fid) return; try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); let el=document.getElementById('im_'+p.id); if(el) el.src=jj.url;}catch(e){}});
-}
-function openM(id){
- id=Number(id); let p=P.find(x=>Number(x.id)==id); if(!p) return;
- let imgs=(p.images&&p.images.length?p.images:[p.img]).filter(Boolean);
- let gal=imgs.map((_,i)=>`<img id="g_${id}_${i}" src="">`).join('');
- let dots=imgs.map((_,i)=>`<span class="${i==0?'on':''}" id="d_${id}_${i}"></span>`).join('');
- let inCart=CART.includes(id);
- let btn=p.status==='sold_recent'?`<button disabled class=btn>СП*ЗДИЛИ? САМ ВИНОВАТ</button><div class=sub>10ч и его нет</div>`:`<button id="buy_${id}" class="btn ${inCart?'added':''}" onclick="addToBox(${id},${p.price})">${inCart?`+1 К СТИЛЮ, -${p.price} К ГРУСТИ`:'ПОЛОЖИТЬ В КОРОБКУ.'}</button><div class=sub>${inCart?'Уже в коробке':'Оригинал • Доставка по РФ'}</div>`;
- document.getElementById('modal').innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff;z-index:2"><b style="font-size:11px;letter-spacing:.8px;opacity:.6;text-transform:lowercase">посмотрите на это чудо поближеееееееееее</b><span onclick="closeAll()" style="font-size:26px;cursor:pointer">✕</span></div><div class="gal" id="gal_${id}" onscroll="updDots(${id})">${gal}</div><div class="dots">${dots}</div><div style="padding:14px"><div style="font-weight:900;opacity:.5;font-size:11px">${p.brand?.toUpperCase()||''}</div><h2 style="word-break:break-word">${p.name}</h2><div style="opacity:.7;font-size:13px;margin:6px 0">Размер: ${p.size||''} ${p.tag?'• '+p.tag:''}</div>${p.description?`<div class="desc">${p.description}</div>`:''}<h2>${p.price}₽</h2><div style="margin-top:12px">${btn}</div></div>`;
- document.getElementById('modal').style.display='block';
- imgs.forEach(async(fid,i)=>{try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); let el=document.getElementById(`g_${id}_${i}`); if(el) el.src=jj.url;}catch(e){}});
-}
-function addToBox(id,price){
- id=Number(id);
- let btn=document.getElementById('buy_'+id);
- if(CART.includes(id)){CART=CART.filter(x=>x!==id); if(btn){btn.innerText='ПОЛОЖИТЬ В КОРОБКУ.'; btn.classList.remove('added');} saveCart(); if(document.getElementById('cartModal').style.display==='block') renderCart(); return;}
- playBoxSound();
- CART=[...new Set([...CART, id])];
- if(btn){btn.innerText=`+1 К СТИЛЮ, -${price} К ГРУСТИ`; btn.classList.add('added');}
- if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
- saveCart();
- let boxIcon=document.getElementById('boxIcon'); let toast=document.getElementById('toast');
- if(boxIcon) boxIcon.classList.add('jump');
- if(toast){toast.innerText='В КОРОБКЕ 📦'; toast.classList.add('show');}
- setTimeout(()=>{
-  closeAll();
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(toast) toast.classList.remove('show');
-  if(boxIcon){setTimeout(()=>boxIcon.classList.remove('jump'),600);}
- },1200);
- if(document.getElementById('cartModal').style.display==='block') renderCart();
-}
-function openCart(){renderCart(); document.getElementById('cartModal').style.display='block';}
-function closeAll(){document.getElementById('modal').style.display='none'; document.getElementById('cartModal').style.display='none';}
-function renderCart(){
- let cm=document.getElementById('cartModal'); let items=P.filter(p=>CART.includes(Number(p.id))); let total=items.reduce((s,p)=>s+p.price,0);
- if(!items.length){cm.innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b>КОРОБКА С ВЕЩАМИ</b><span onclick="closeAll()" style="font-size:26px">✕</span></div><div style="padding:40px;text-align:center;font-weight:900">КОРОБКА ПУСТАЯ</div>`; return;}
- cm.innerHTML=`<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111;position:sticky;top:0;background:#fff"><b>КОРОБКА С ВЕЩАМИ • ${items.length}</b><span onclick="closeAll()" style="font-size:26px">✕</span></div>${items.map(p=>`<div class="cart-item"><img id="c_${p.id}" src=""><div style="flex:1;overflow:hidden"><div style="font-size:10px;opacity:.5;font-weight:900">${p.brand}</div><div style="font-weight:900;word-break:break-word">${p.name}</div><div style="opacity:.7;font-size:11px">${p.size||''}</div><div style="font-weight:900;margin-top:4px">${p.price}₽</div></div><div onclick="removeFromCart(${p.id})" style="font-size:22px;cursor:pointer">✕</div></div>`).join('')}<div style="padding:14px;border-top:3px solid #111;position:sticky;bottom:0;background:#fff"><div style="display:flex;justify-content:space-between;font-weight:900;margin-bottom:12px"><span>ИТОГО:</span><span>${total}₽</span></div><button id="checkoutBtn" class="btn" onclick="checkout()">ОФОРМИТЬ КОРОБКУ • ${total}₽</button></div>`;
- items.forEach(async p=>{let fid=p.images&&p.images[0]?p.images[0]:p.img; if(!fid) return; try{let rr=await fetch('/api/file/'+fid); let jj=await rr.json(); let el=document.getElementById('c_'+p.id); if(el) el.src=jj.url;}catch(e){}});
-}
-async function checkout(){
- let items=P.filter(p=>CART.includes(Number(p.id))); let total=items.reduce((s,p)=>s+p.price,0);
- if(!items.length) return;
- let u=tg.initDataUnsafe?.user||{id:0, first_name:'Гость', username:''};
- let btn=document.getElementById('checkoutBtn'); if(btn){btn.innerText='ОТПРАВЛЯЕМ...'; btn.disabled=true;}
- try{
-  let res=await fetch('/api/order',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user:u, items:CART, total})});
-  if(res.ok){
-   document.getElementById('cartModal').innerHTML=`<div style="padding:40px;text-align:center"><div style="font-size:48px">📦</div><div style="font-weight:900;font-size:18px;margin-top:12px">ЗАКАЗ УЛЕТЕЛ!</div><div style="opacity:.6;margin-top:8px;font-size:13px">Мы уже пишем тебе в ЛС<br>Проверь Телегу</div><button class="btn" style="margin-top:20px" onclick="CART=[];saveCart();closeAll();load();">ОКЕЙ</button></div>`;
-   CART=[]; saveCart();
-   if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-  }else{ alert('Ошибка, напиши @goofy_culture'); if(btn){btn.innerText=`ОФОРМИТЬ КОРОБКУ • ${total}₽`; btn.disabled=false;} }
- }catch(e){ alert('Ошибка сети'); if(btn){btn.innerText=`ОФОРМИТЬ КОРОБКУ • ${total}₽`; btn.disabled=false;} }
-}
-function removeFromCart(id){id=Number(id); CART=CART.filter(x=>x!==id); saveCart(); renderCart();}
-function updDots(id){let gal=document.getElementById('gal_'+id); if(!gal) return; let w=gal.clientWidth*0.85+12; let idx=Math.round(gal.scrollLeft/w); document.querySelectorAll(`[id^="d_${id}_"]`).forEach((el,i)=>{el.className=i==idx?'on':''});}
-load();
-</script></body></html>
+<div class="toast" id="toast">В КОРОБКЕ 📦
