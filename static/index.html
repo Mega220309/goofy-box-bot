@@ -1,167 +1,98 @@
-<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-body{margin:0;font-family:monospace;background:#fff;color:#111}
-.banner{width:100%;display:block;border-bottom:3px solid #000}
-.wrap{max-width:480px;margin:0 auto;padding-bottom:80px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
-.card{border:2px solid #000;border-radius:12px;padding:8px}
-.pic{background:#eee;aspect-ratio:1;border-radius:8px;overflow:hidden}
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GOOFY BOX</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
+*{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace;overflow-x:hidden}
+.wrap{max-width:480px;margin:0 auto;padding-bottom:90px}
+.banner{width:100%;display:block;border-bottom:3px solid #111;background:#f2f2f2}
+.head{padding:14px;text-align:center;font-weight:900;border-bottom:3px solid #111}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff}
+.pic{aspect-ratio:1;background:#eee;border-radius:12px;overflow:hidden}
 .pic img{width:100%;height:100%;object-fit:cover}
-.price{border:1.5px solid #000;padding:4px 8px;display:inline-block;font-weight:900;margin-top:4px;background:#fff}
-.nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#fff;border-top:3px solid #000;display:flex;justify-content:space-around;padding:10px 0}
-#modal,#cart{position:fixed;inset:0;background:#fff;z-index:50;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #000;border-right:3px solid #000}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:10px 16px;border-radius:8px;font-weight:900;z-index:99;display:none}
+.price{background:#111;color:#fff;padding:6px 9px;border-radius:8px;display:inline-block;font-weight:900;font-size:11px;margin-top:6px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3.5px solid #111;display:flex;justify-content:space-around;padding:12px 0;text-align:center;z-index:20}
+.icon{width:34px;height:34px;border:2.5px solid #111;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;background:#fff;position:relative}
+.icon.box:before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:14px;height:7px;border:2.5px solid #111;border-bottom:0;border-radius:4px 4px 0 0;background:#fff}
+.icon.box.jump{animation:jump.5s}
+@keyframes jump{50%{transform:translateY(-10px)}}
+#modal,#cartModal{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111}
+.gal{display:flex;gap:10px;overflow-x:auto;padding:12px}
+.gal img{flex:0 0 85%;width:85%;aspect-ratio:1;object-fit:cover;border:3px solid #111;border-radius:16px}
+.btn{width:100%;padding:16px;border-radius:12px;font-weight:900;border:3px solid #111;background:#111;color:#fff}
+.btn.added{background:#fff;color:#111;border-style:dashed}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:10px;font-weight:900;opacity:0;transition:.3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
+.shake{animation:shake.3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.flex{margin:12px;border:2.5px solid #111;border-radius:12px;padding:10px}
+.bar{height:14px;background:#eee;border:2px solid #111;border-radius:7px;overflow:hidden;margin-top:6px}
+.fill{height:100%;background:#111;width:0%;transition:.5s}
+.conf{position:fixed;top:-10px;width:8px;height:12px;background:#111;animation:fall 1.2s linear forwards;pointer-events:none;z-index:200}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.banner-wrap{position:relative;border-bottom:3px solid #111}
+.secret{position:absolute;top:0;right:0;padding:14px;opacity:.35;font-size:18px;z-index:5}
 </style></head><body>
 <div class="wrap">
-<div style="position:relative">
+<div class="banner-wrap">
 <img src="/static/banner.jpg.WEBP" onerror="this.src='/static/banner.webp'" class="banner">
-<div onclick="steal()" style="position:absolute;top:0;right:0;padding:20px;font-size:20px">✦</div>
+<div class="secret" onclick="steal()">✦</div>
 </div>
-<div style="background:#000;color:#fff;text-align:center;padding:8px;font-weight:900;font-size:11px">4 БОМЖА СМОТРЯТ КАТАЛОГ • ПОТОРГУЙСЯ ЗА СКИДКУ</div>
-<div style="text-align:center;font-weight:900;padding:12px;border-bottom:3px solid #000">КАТАЛОГ</div>
-<div id="grid" class="grid">гружу...</div>
-<div style="text-align:center;padding:20px"><button onclick="localStorage.clear();location.reload()" style="border:2px dashed #000;padding:8px;background:#fff">СБРОСИТЬ КЕШ ЕСЛИ ГЛЮЧИТ</button></div>
+<div class="head">КАТАЛОГ</div>
+<div id="grid" class="grid">Загрузка...</div>
 </div>
 <div class="nav">
-<div id="btnCat">⊞<br>Каталог</div>
-<div id="btnBox">📦<br><span id="cnt">Коробка</span></div>
-<div id="btnClose">×<br>Закрыть</div>
+<div onclick="closeAll();window.scrollTo(0,0)" style="cursor:pointer"><div class="icon">⊞</div><div style="font-size:11px;font-weight:900;margin-top:4px">Каталог</div></div>
+<div onclick="openCart()" style="cursor:pointer"><div class="icon box" id="boxIcon"></div><div id="cartCount" style="font-size:11px;font-weight:900;margin-top:4px">Коробка</div></div>
+<div onclick="Telegram.WebApp.close()" style="cursor:pointer"><div class="icon">×</div><div style="font-size:11px;font-weight:900;margin-top:4px">Закрыть</div></div>
 </div>
-<div id="toast" class="toast"></div>
-<div id="modal"></div><div id="cart"></div>
+<div class="toast" id="toast"></div>
+<div id="modal"></div>
+<div id="cartModal"></div>
 <script>
-let P=[], CART=[], STEAL=0, DISC=0;
-const KEY='goofy_v3';
-try{ CART = JSON.parse(localStorage.getItem(KEY)||'[]').map(Number) }catch(e){ CART=[] }
-
-function save(){
- localStorage.setItem(KEY, JSON.stringify(CART));
- document.getElementById('cnt').innerText = CART.length? 'Коробка ('+CART.length+')' : 'Коробка';
-}
-function showToast(t){
- let el=document.getElementById('toast');
- el.innerText=t; el.style.display='block';
- setTimeout(()=>el.style.display='none',1500);
-}
+let P=[], CART_KEY='goofy_box_v3', CART=[], STEAL=0, DISCOUNT=0;
+try{CART=JSON.parse(localStorage.getItem(CART_KEY)||'[]')}catch(e){CART=[]}
+CART=CART.map(Number);
+let tg=window.Telegram&&Telegram.WebApp?Telegram.WebApp:null; if(tg){tg.ready();tg.expand();}
+function save(){localStorage.setItem(CART_KEY,JSON.stringify(CART));let el=document.getElementById('cartCount');if(el)el.innerText=CART.length?'Коробка ('+CART.length+')':'Коробка';}
 save();
-
 async function load(){
- const g=document.getElementById('grid');
- try{
-  const r=await fetch('/api/products?'+Date.now());
-  P=await r.json();
- }catch(e){
-  g.innerHTML='Ошибка API: '+e; return;
- }
- if(!P.length){ g.innerHTML='пусто'; return; }
- CART = CART.filter(id=>P.find(p=>Number(p.id)===Number(id)));
- save();
- g.innerHTML='';
- P.forEach(p=>{
-  let d=document.createElement('div');
-  d.className='card';
-  d.innerHTML='<div class="pic"><img id="im_'+p.id+'"></div><div style="font-size:10px;opacity:.5">'+(p.brand||'')+'</div><div style="font-weight:900">'+p.name+'</div><div class="price">'+p.price+'₽</div>';
-  d.onclick=()=>openM(p.id);
-  g.appendChild(d);
-  let fid = p.images && p.images[0]? p.images[0] : p.img;
-  if(fid) fetch('/api/file/'+fid).then(r=>r.json()).then(j=>{ let im=document.getElementById('im_'+p.id); if(im) im.src=j.url }).catch(()=>{});
- });
+ let g=document.getElementById('grid');
+ try{let r=await fetch('/api/products?t='+Date.now());P=await r.json();}catch(e){g.innerHTML='Ошибка';return;}
+ CART=CART.filter(id=>P.some(p=>p.id==id));save();
+ if(!P.length){g.innerHTML='<div style="grid-column:1/3;text-align:center;padding:30px;border:2px dashed #111;border-radius:12px;font-weight:900">ПУСТО</div>';return;}
+ g.innerHTML=P.map(p=>'<div class="card" onclick="openM('+p.id+')"><div class="pic"><img id="im_'+p.id+'"></div><div style="font-size:10px;opacity:.5;font-weight:900;margin-top:4px">'+(p.brand||'')+'</div><div style="font-size:12px;font-weight:900;height:26px;overflow:hidden">'+p.name+'</div><div class="price">'+p.price+'₽</div></div>').join('');
+ P.forEach(async p=>{let fid=(p.images&&p.images[0])?p.images[0]:p.img;if(!fid)return;try{let rr=await fetch('/api/file/'+fid);let jj=await rr.json();let el=document.getElementById('im_'+p.id);if(el)el.src=jj.url;}catch(e){}});
 }
-
 function openM(id){
- id=Number(id);
- let p=P.find(x=>Number(x.id)===id); if(!p) return;
- let modal=document.getElementById('modal');
- let inCart = CART.includes(id);
- let price = DISC? Math.round(p.price*0.9) : p.price;
- modal.innerHTML='';
- let top=document.createElement('div');
- top.style='padding:10px;display:flex;justify-content:space-between;border-bottom:3px solid #000';
- top.innerHTML='<b>'+p.name+'</b><span id="x">✕</span>';
- let body=document.createElement('div');
- body.style='padding:12px';
- body.innerHTML='<div>Размер: '+(p.size||'')+'</div><div class="price" style="font-size:18px;margin:10px 0">'+price+'₽ '+(DISC?'<small style="text-decoration:line-through;opacity:.5">'+p.price+'₽</small>':'')+'</div><button id="addBtn" style="width:100%;padding:14px;background:#000;color:#fff;border:3px solid #000;font-weight:900">'+(inCart?'УБРАТЬ':'В КОРОБКУ')+'</button>';
- modal.appendChild(top); modal.appendChild(body);
- modal.style.display='block';
- document.getElementById('x').onclick=closeAll;
- document.getElementById('addBtn').onclick=()=>{ addBox(id); };
+ let p=P.find(x=>x.id==id);if(!p)return;
+ let imgs=(p.images&&p.images.length?p.images:[p.img]).filter(Boolean);
+ let gal=imgs.map((_,i)=>'<img id="g_'+id+'_'+i+'">').join('');
+ let inCart=CART.includes(id);
+ document.getElementById('modal').innerHTML='<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b style="font-size:11px;opacity:.6">ПОБЛИЖЕ</b><span onclick="closeAll()" style="font-size:24px;cursor:pointer">✕</span></div><div class="gal">'+gal+'</div><div style="padding:14px"><h2>'+(p.brand||'')+' '+p.name+'</h2><div style="opacity:.7;margin:6px 0">'+(p.size||'')+'</div><div style="font-weight:900;font-size:20px;margin:10px 0">'+p.price+'₽</div><button id="buy_'+id+'" class="btn '+(inCart?'added':'')+'" onclick="addToBox('+id+')">'+(inCart?'УБРАТЬ ИЗ КОРОБКИ':'ПОЛОЖИТЬ В КОРОБКУ')+'</button></div>';
+ document.getElementById('modal').style.display='block';
+ imgs.forEach(async(fid,i)=>{try{let rr=await fetch('/api/file/'+fid);let jj=await rr.json();let el=document.getElementById('g_'+id+'_'+i);if(el)el.src=jj.url;}catch(e){}});
 }
-
-function addBox(id){
- id=Number(id);
- let idx=CART.indexOf(id);
- if(idx>=0){ CART.splice(idx,1); showToast('УБРАЛ'); }
- else { CART.push(id); showToast('В КОРОБКЕ'); }
- save();
- closeAll();
+function addToBox(id){
+ let was=CART.includes(id);
+ if(was){CART=CART.filter(x=>x!=id);}else{CART.push(id);document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),300);if(CART.length>=3)boom();}
+ save();closeAll();toast(was?'УБРАЛ':'В КОРОБКЕ 📦');
+ let ic=document.getElementById('boxIcon');if(ic){ic.classList.add('jump');setTimeout(()=>ic.classList.remove('jump'),600);}
 }
-
-function closeAll(){
- document.getElementById('modal').style.display='none';
- document.getElementById('cart').style.display='none';
+function toast(t){let el=document.getElementById('toast');el.innerText=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500);}
+function openCart(){renderCart();document.getElementById('cartModal').style.display='block';if(CART.length>=3)boom();}
+function closeAll(){document.getElementById('modal').style.display='none';document.getElementById('cartModal').style.display='none';}
+function getFlex(){let n=CART.length;if(n==0)return{p:0,txt:'БОМЖ 100% / FLEX 0% - пусто'};if(n==1)return{p:35,txt:'БОМЖ 65% / FLEX 35% - норм'};if(n==2)return{p:70,txt:'БОМЖ 30% / FLEX 70% - свежак'};return{p:100,txt:'БОМЖ 0% / FLEX 100% - БОГ СВЕГА 🔥'};}
+function boom(){for(let i=0;i<18;i++){let d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.animationDelay=Math.random()*.3+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),1300);}}
+function renderCart(){
+ let cm=document.getElementById('cartModal');let items=P.filter(p=>CART.includes(p.id));let total=items.reduce((s,p)=>s+p.price,0);if(DISCOUNT)total=Math.round(total*0.9);
+ let flex=getFlex();
+ if(!items.length){cm.innerHTML='<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b>КОРОБКА</b><span onclick="closeAll()" style="font-size:24px">✕</span></div><div class="flex"><div style="display:flex;justify-content:space-between;font-weight:900"><span>FLEX METR</span><span>'+flex.p+'%</span></div><div class="bar"><div class="fill" style="width:'+flex.p+'%"></div></div><div style="font-size:10px;margin-top:4px">'+flex.txt+'</div></div><div style="padding:40px;text-align:center;font-weight:900">ПУСТО</div>';return;}
+ cm.innerHTML='<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b>КОРОБКА • '+items.length+'</b><span onclick="closeAll()" style="font-size:24px">✕</span></div><div class="flex"><div style="display:flex;justify-content:space-between;font-weight:900"><span>FLEX METR '+(flex.p==100?'🔥':'')+'</span><span>'+flex.p+'%</span></div><div class="bar"><div class="fill" style="width:'+flex.p+'%"></div></div><div style="font-size:10px;margin-top:4px;font-weight:900">'+flex.txt+'</div></div>'+(DISCOUNT?'<div style="margin:10px;border:2px dashed #111;border-radius:10px;padding:8px;text-align:center;font-weight:900">СКИДКА 10% УКРАДЕНА • GOOFY10</div>':'')+items.map(p=>'<div style="display:flex;gap:10px;border:2px solid #111;border-radius:12px;padding:8px;margin:10px"><img id="c_'+p.id+'" style="width:70px;height:70px;border-radius:8px;border:2px solid #111;object-fit:cover"><div style="flex:1"><div style="font-weight:900">'+p.name+'</div><div>'+p.price+'₽</div></div><div onclick="addToBox('+p.id+');renderCart()" style="font-size:20px;cursor:pointer">✕</div></div>').join('')+'<div style="padding:12px;border-top:3px solid #111"><div style="display:flex;justify-content:space-between;font-weight:900"><span>ИТОГО '+(DISCOUNT?'-10%':'')+'</span><span>'+total+'₽</span></div><button class="btn" style="margin-top:10px" onclick="checkout()">ОФОРМИТЬ • '+total+'₽</button></div>';
+ items.forEach(async p=>{let fid=(p.images&&p.images[0])?p.images[0]:p.img;if(!fid)return;try{let rr=await fetch('/api/file/'+fid);let jj=await rr.json();let el=document.getElementById('c_'+p.id);if(el)el.src=jj.url;}catch(e){}});
 }
-
-function openCart(){
- let cart=document.getElementById('cart');
- cart.innerHTML='';
- let top=document.createElement('div');
- top.style='padding:10px;display:flex;justify-content:space-between;border-bottom:3px solid #000';
- top.innerHTML='<b>КОРОБКА '+CART.length+(DISC?' -10%':'')+'</b><span id="x2">✕</span>';
- cart.appendChild(top);
- document.getElementById('x2').onclick=closeAll;
-
- let items=P.filter(p=>CART.includes(Number(p.id)));
- let total=0; items.forEach(p=>total+=Number(p.price));
- if(DISC) total=Math.round(total*0.9);
-
- if(!items.length){
-  let e=document.createElement('div'); e.style='padding:40px;text-align:center;font-weight:900'; e.innerText='ПУСТО'; cart.appendChild(e);
- }else{
-  items.forEach(p=>{
-   let row=document.createElement('div');
-   row.style='display:flex;gap:8px;border:2px solid #000;border-radius:10px;padding:8px;margin:8px';
-   row.innerHTML='<img id="c_'+p.id+'" style="width:60px;height:60px;border:1px solid #000"><div style="flex:1"><b>'+p.name+'</b><div>'+p.price+'₽</div></div><div style="font-size:20px" id="del_'+p.id+'">✕</div>';
-   cart.appendChild(row);
-   setTimeout(()=>{
-     let del=document.getElementById('del_'+p.id);
-     if(del) del.onclick=()=>{ addBox(Number(p.id)); openCart(); };
-     let fid = p.images && p.images[0]? p.images[0] : p.img;
-     if(fid) fetch('/api/file/'+fid).then(r=>r.json()).then(j=>{ let im=document.getElementById('c_'+p.id); if(im) im.src=j.url }).catch(()=>{});
-   },0);
-  });
- }
-
- let bottom=document.createElement('div');
- bottom.style='padding:12px;border-top:3px solid #000';
- bottom.innerHTML='<div style="display:flex;justify-content:space-between;font-weight:900"><span>ИТОГО</span><span>'+total+'₽</span></div><button id="orderBtn" style="width:100%;padding:14px;background:#000;color:#fff;border:3px solid #000;margin-top:8px">ОФОРМИТЬ '+total+'₽</button><button id="bargBtn" style="width:100%;padding:12px;background:#fff;border:2px dashed #000;margin-top:8px">ПОТОРГОВАТЬСЯ</button>';
- cart.appendChild(bottom);
- document.getElementById('orderBtn').onclick=checkout;
- document.getElementById('bargBtn').onclick=bargain;
- cart.style.display='block';
+function steal(){STEAL++;if(STEAL>=10&&!DISCOUNT){DISCOUNT=1;STEAL=0;toast('СКИДКА 10% УКРАДЕНА!');boom();}else if(STEAL>3){toast(STEAL+'/10');}}
+async function checkout(){
+ let items=P.filter(p=>CART.includes(p.id));let total=items.reduce((s,p)=>s+p.price,0);if(DISCOUNT)total=Math.round(total*0.9);
+ let u=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?tg.initDataUnsafe.user:{id:0,first_name:'Гость'};
+ try{let res=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:u,items:CART,total,discount:DISCOUNT?10:0})});if(res.ok){document.getElementById('cartModal').innerHTML='<div style="padding:40px;text-align:center"><div style="font-size:40px">📦</div><div style="font-weight:900;margin-top:10px">ЗАКАЗ УЛЕТЕЛ!</div><button class="btn" style="margin-top:15px" onclick="CART=[];DISCOUNT=0;save();closeAll();load();">ОК</button></div>';CART=[];save();boom();}else{alert('Ошибка');}}catch(e){alert('Сеть');}
 }
-
-function bargain(){
- let r=prompt('Почему скинуть?');
- if(!r) return;
- fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:CART,bargain:r})});
- showToast('ОТПРАВИЛ БОССУ');
-}
-function checkout(){
- let items=P.filter(p=>CART.includes(Number(p.id)));
- let total=0; items.forEach(p=>total+=Number(p.price));
- if(DISC) total=Math.round(total*0.9);
- fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:CART,total:total})}).then(()=>{ showToast('ЗАКАЗ УЛЕТЕЛ'); CART=[]; save(); closeAll(); });
-}
-function steal(){
- STEAL++;
- if(STEAL>=10 && DISC===0){ DISC=1; STEAL=0; showToast('СКИДКА 10% АКТИВНА'); save(); }
- else if(STEAL>=3){ showToast(STEAL+'/10 до скидки'); }
-}
-
-document.getElementById('btnCat').onclick=()=>{ closeAll(); window.scrollTo(0,0); };
-document.getElementById('btnBox').onclick=openCart;
-document.getElementById('btnClose').onclick=()=>{ if(window.Telegram&&Telegram.WebApp) Telegram.WebApp.close(); };
 load();
 </script></body></html>
