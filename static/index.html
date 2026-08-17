@@ -29,11 +29,9 @@
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 .banner-wrap{position:relative;border-bottom:3px solid #111}
 .secret{position:absolute;top:0;right:0;padding:14px;opacity:.35;font-size:18px;z-index:5}
-/* 12,20,21 */
 #sniffOverlay{position:fixed;inset:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(12px);z-index:150;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
 #stealthOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:140;display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff}
 .receipt{font-family:monospace;background:#fff;border:2px dashed #111;padding:12px;margin:12px;border-radius:2px}
-.receipt.line{border-top:1px dashed #111;margin:8px 0}
 </style></head><body>
 <div class="wrap">
 <div class="banner-wrap">
@@ -51,9 +49,7 @@
 <div class="toast" id="toast"></div>
 <div id="modal"></div>
 <div id="cartModal"></div>
-<!-- 12 НЮХНИ -->
 <div id="sniffOverlay" onclick="this.style.display='none'"><div style="font-size:50px">👃</div><div id="sniffText" style="font-weight:900;font-size:18px;margin-top:12px;border:3px solid #111;background:#fff;padding:12px;border-radius:12px"></div><div style="margin-top:10px;opacity:.6">тапни чтобы выдохнуть</div></div>
-<!-- 21 СТЕЛС -->
 <div id="stealthOverlay" onclick="hideStealth()"><div style="font-size:80px">👁️</div><div style="font-weight:900;font-size:22px;margin-top:10px">ТЫ ЕЩЕ ТУТ?</div><div style="opacity:.7;margin-top:6px">я тебя вижу... бомж не спит</div><div style="margin-top:20px;border:2px solid #fff;padding:8px 14px;border-radius:8px">ВЕРНУТЬСЯ К ШМОТУ</div></div>
 <script>
 let P=[], CART_KEY='goofy_box_v3', CART=[], STEAL=0, DISCOUNT=0;
@@ -75,11 +71,10 @@ function openM(id){
  let imgs=(p.images&&p.images.length?p.images:[p.img]).filter(Boolean);
  let gal=imgs.map((_,i)=>'<img id="g_'+id+'_'+i+'">').join('');
  let inCart=CART.includes(id);
- document.getElementById('modal').innerHTML='<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b style="font-size:11px;opacity:.6">ПОБЛИЖЕ</b><span onclick="closeAll()" style="font-size:24px;cursor:pointer">✕</span></div><div class="gal">'+gal+'</div><div style="padding:14px"><h2>'+(p.brand||'')+' '+p.name+'</h2><div style="opacity:.7;margin:6px 0">'+(p.size||'')+'</div><div style="font-weight:900;font-size:20px;margin:10px 0">'+p.price+'₽</div><button id="buy_'+id+'" class="btn '+(inCart?'added':'')+'" onclick="addToBox('+id+')">'+(inCart?'УБРАТЬ ИЗ КОРОБКИ':'ПОЛОЖИТЬ В КОРОБКУ')+'</button><button onclick="sniff()" style="width:100%;margin-top:8px;padding:12px;border:2.5px dashed #111;border-radius:12px;background:#fff;font-weight:900">👃 ПОНЮХАТЬ [12]</button></div>';
+ document.getElementById('modal').innerHTML='<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b style="font-size:11px;opacity:.6">УЗРИТЕ ЭТОТ ФЛЕЕЕЕЕЕЕКС</b><span onclick="closeAll()" style="font-size:24px;cursor:pointer">✕</span></div><div class="gal">'+gal+'</div><div style="padding:14px"><h2>'+(p.brand||'')+' '+p.name+'</h2><div style="opacity:.7;margin:6px 0">'+(p.size||'')+'</div><div style="font-weight:900;font-size:20px;margin:10px 0">'+p.price+'₽</div><button id="buy_'+id+'" class="btn '+(inCart?'added':'')+'" onclick="addToBox('+id+')">'+(inCart?'УБРАТЬ ИЗ КОРОБКИ':'ПОЛОЖИТЬ В КОРОБКУ')+'</button><button onclick="sniff()" style="width:100%;margin-top:8px;padding:12px;border:2.5px dashed #111;border-radius:12px;background:#fff;font-weight:900;color:#111">ПОНЮХАТЬ</button></div>';
  document.getElementById('modal').style.display='block';
  imgs.forEach(async(fid,i)=>{try{let rr=await fetch('/api/file/'+fid);let jj=await rr.json();let el=document.getElementById('g_'+id+'_'+i);if(el)el.src=jj.url;}catch(e){}});
 }
-// 12
 function sniff(){
  const frases=["пахнет секондом с Щелчка, чуть потом и победой","пахнет как будто в ней спали 3 бомжа, но стильно","аромат свободы, сигарет и дорогого парфюма за 1200₽","пахнет флексом. чистый флекс.","бля, это же пахнет как твой будущий успех"];
  let t=frases[Math.floor(Math.random()*frases.length)];
@@ -112,15 +107,13 @@ async function checkout(){
  try{
   let res=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:u,items:CART,total,discount:DISCOUNT?10:0})});
   if(res.ok){
-   // 20 ЧЕК ИЗ ПЯТЕРОЧКИ
    let date = new Date().toLocaleString('ru-RU');
    let list = items.map(p=>'<div style="display:flex;justify-content:space-between"><span>'+p.name.slice(0,18)+'</span><span>'+p.price+'₽</span></div>').join('');
-   document.getElementById('cartModal').innerHTML='<div style="padding:40px 12px;text-align:center"><div style="font-size:40px">🧾</div><div class="receipt" style="text-align:left"><div style="text-align:center;font-weight:900">ООО "GOOFY BOX"<br>СПАСИБО ЗА ПОКУПКУ, БРОДЯГА</div><div class="line"></div><div style="font-size:10px">КАССА: #666 КАССИР: БОМЖ С ЩЕЛЧКА<br>ДАТА: '+date+'</div><div class="line"></div>'+list+'<div class="line"></div><div style="display:flex;justify-content:space-between;font-weight:900"><span>ИТОГО ФЛЕКС:</span><span>'+total+'₽</span></div><div class="line"></div><div style="text-align:center;font-size:10px">ПАКЕТ МАЙКА - 0₽<br>ПАКЕТ НЕ НУЖЕН - ТЫ И ТАК БОМЖ<br>*** ФЛЕКС НЕ ПОДЛЕЖИТ ВОЗВРАТУ ***<br><br>ЧТОБЫ НЕ ПОТЕРЯТЬ - СКРИНЬ ЧЕК</div></div><button class="btn" style="margin-top:15px" onclick="CART=[];DISCOUNT=0;save();closeAll();load();">ОК, СКРИН СДЕЛАЛ</button></div>';
+   document.getElementById('cartModal').innerHTML='<div style="padding:40px 12px;text-align:center"><div style="font-size:40px">🧾</div><div class="receipt" style="text-align:left"><div style="text-align:center;font-weight:900">ООО "GOOFY BOX"<br>СПАСИБО ЗА ПОКУПКУ, БРОДЯГА</div><div style="border-top:1px dashed #111;margin:8px 0"></div><div style="font-size:10px">КАССА: #666 КАССИР: БОМЖ С ЩЕЛЧКА<br>ДАТА: '+date+'</div><div style="border-top:1px dashed #111;margin:8px 0"></div>'+list+'<div style="border-top:1px dashed #111;margin:8px 0"></div><div style="display:flex;justify-content:space-between;font-weight:900"><span>ИТОГО ФЛЕКС:</span><span>'+total+'₽</span></div><div style="border-top:1px dashed #111;margin:8px 0"></div><div style="text-align:center;font-size:10px">ПАКЕТ МАЙКА - 0₽<br>ПАКЕТ НЕ НУЖЕН - ТЫ И ТАК БОМЖ<br>*** ФЛЕКС НЕ ПОДЛЕЖИТ ВОЗВРАТУ ***<br><br>ЧТОБЫ НЕ ПОТЕРЯТЬ - СКРИНЬ ЧЕК</div></div><button class="btn" style="margin-top:15px" onclick="CART=[];DISCOUNT=0;save();closeAll();load();">ОК, СКРИН СДЕЛАЛ</button></div>';
    CART=[];save();boom();
   }else{alert('Ошибка');}
  }catch(e){alert('Сеть');}
 }
-// 21 СТЕЛС
 let stealthTimer;
 function resetStealth(){clearTimeout(stealthTimer);document.getElementById('stealthOverlay').style.display='none';stealthTimer=setTimeout(()=>{document.getElementById('stealthOverlay').style.display='flex';},60000);}
 function hideStealth(){document.getElementById('stealthOverlay').style.display='none';resetStealth();}
