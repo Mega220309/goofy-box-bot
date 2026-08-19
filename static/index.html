@@ -1,36 +1,41 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GOOFY BOX</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GC BOX</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
 *{box-sizing:border-box;margin:0}body{background:#fff;color:#111;font-family:monospace;overflow-x:hidden}
-.wrap{max-width:480px;margin:0 auto;padding-bottom:90px}
+.wrap{max-width:480px;margin:0 auto;padding-bottom:110px}
 .banner{width:100%;display:block;border-bottom:3px solid #111;background:#f2f2f2}
 .head{padding:14px;text-align:center;font-weight:900;border-bottom:3px solid #111}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
 .card{border:2.5px solid #111;border-radius:16px;padding:8px;background:#fff}
-.pic{aspect-ratio:1;background:#eee;border-radius:12px;overflow:hidden}
+.pic{aspect-ratio:1;background:#eee;border-radius:12px;overflow:hidden;position:relative}
 .pic img{width:100%;height:100%;object-fit:cover}
 .price{background:#111;color:#fff;padding:6px 9px;border-radius:8px;display:inline-block;font-weight:900;font-size:11px;margin-top:6px}
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3.5px solid #111;display:flex;justify-content:space-around;padding:12px 0;text-align:center;z-index:20}
-.icon{width:34px;height:34px;border:2.5px solid #111;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;background:#fff;position:relative}
-.icon.box:before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:14px;height:7px;border:2.5px solid #111;border-bottom:0;border-radius:4px 4px 0 0;background:#fff}
+
+/* ФИКС ПАНЕЛЬКИ - РОВНО ПО ЦЕНТРУ */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:3.5px solid #111;display:flex;z-index:999;border-radius:20px 20px 0 0;padding:8px 0 18px 0}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;cursor:pointer}
+.nav-item.icon{width:48px;height:48px;border:2.5px solid #111;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;background:#fff;position:relative;font-size:22px;line-height:1}
+.nav-item.label{font-size:13px;font-weight:900;text-align:center;line-height:1;width:100%;display:block}
+.icon.box:before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:16px;height:8px;border:2.5px solid #111;border-bottom:0;border-radius:5px 5px 0 0;background:#fff}
 .icon.box.jump{animation:jump.5s}
 @keyframes jump{50%{transform:translateY(-10px)}}
-#modal,#cartModal{position:fixed;inset:0;background:#fff;z-index:99;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111}
+
+#modal,#cartModal{position:fixed;inset:0;background:#fff;z-index:100;display:none;overflow:auto;max-width:480px;margin:0 auto;border-left:3px solid #111;border-right:3px solid #111;padding-bottom:110px}
 .gal{display:flex;gap:10px;overflow-x:auto;padding:12px}
 .gal img{flex:0 0 85%;width:85%;aspect-ratio:1;object-fit:cover;border:3px solid #111;border-radius:16px}
 .btn{width:100%;padding:16px;border-radius:12px;font-weight:900;border:3px solid #111;background:#111;color:#fff}
 .btn.added{background:#fff;color:#111;border-style:dashed}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:10px;font-weight:900;opacity:0;transition:.3s;pointer-events:none;z-index:100}
+.toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:10px;font-weight:900;opacity:0;transition:.3s;pointer-events:none;z-index:1000;text-align:center;max-width:90%}
 .toast.show{opacity:1}
 .shake{animation:shake.3s}
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .flex{margin:12px;border:2.5px solid #111;border-radius:12px;padding:10px}
 .bar{height:14px;background:#eee;border:2px solid #111;border-radius:7px;overflow:hidden;margin-top:6px}
 .fill{height:100%;background:#111;width:0%;transition:.5s}
-.conf{position:fixed;top:-10px;width:8px;height:12px;background:#111;animation:fall 1.2s linear forwards;pointer-events:none;z-index:200}
+.conf{position:fixed;top:-10px;width:8px;height:12px;background:#111;animation:fall 1.2s linear forwards;pointer-events:none;z-index:1001}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 .banner-wrap{position:relative;border-bottom:3px solid #111}
 .secret{position:absolute;top:0;right:0;padding:14px;opacity:.35;font-size:18px;z-index:5}
-#sniffOverlay{position:fixed;inset:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(12px);z-index:150;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
-#stealthOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:140;display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff}
+#sniffOverlay{position:fixed;inset:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(12px);z-index:900;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
+#stealthOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:800;display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff}
 .receipt{font-family:monospace;background:#fff;border:2px dashed #111;padding:12px;margin:12px;border-radius:2px}
 </style></head><body>
 <div class="wrap">
@@ -41,11 +46,22 @@
 <div class="head">КАТАЛОГ</div>
 <div id="grid" class="grid">Загрузка...</div>
 </div>
+
 <div class="nav">
-<div onclick="closeAll();window.scrollTo(0,0)" style="cursor:pointer"><div class="icon">⊞</div><div style="font-size:11px;font-weight:900;margin-top:4px">Каталог</div></div>
-<div onclick="openCart()" style="cursor:pointer"><div class="icon box" id="boxIcon"></div><div id="cartCount" style="font-size:11px;font-weight:900;margin-top:4px">Коробка</div></div>
-<div onclick="Telegram.WebApp.close()" style="cursor:pointer"><div class="icon">×</div><div style="font-size:11px;font-weight:900;margin-top:4px">Закрыть</div></div>
+  <div class="nav-item" onclick="closeAll();window.scrollTo(0,0)">
+    <div class="icon">⊞</div>
+    <div class="label">Каталог</div>
+  </div>
+  <div class="nav-item" onclick="openCart()">
+    <div class="icon box" id="boxIcon"></div>
+    <div class="label" id="cartCount">Коробка</div>
+  </div>
+  <div class="nav-item" onclick="if(window.Telegram&&Telegram.WebApp)Telegram.WebApp.close();else window.close()">
+    <div class="icon">×</div>
+    <div class="label">Закрыть</div>
+  </div>
 </div>
+
 <div class="toast" id="toast"></div>
 <div id="modal"></div>
 <div id="cartModal"></div>
@@ -58,12 +74,16 @@ CART=CART.map(Number);
 let tg=window.Telegram&&Telegram.WebApp?Telegram.WebApp:null; if(tg){tg.ready();tg.expand();}
 function save(){localStorage.setItem(CART_KEY,JSON.stringify(CART));let el=document.getElementById('cartCount');if(el)el.innerText=CART.length?'Коробка ('+CART.length+')':'Коробка';}
 save();
+function isSoldProduct(p){ return!p || p.sold || p.is_sold || p.stock===0 || p.quantity===0 || p.available===false; }
 async function load(){
  let g=document.getElementById('grid');
  try{let r=await fetch('/api/products?t='+Date.now());P=await r.json();}catch(e){g.innerHTML='Ошибка';return;}
  CART=CART.filter(id=>P.some(p=>p.id==id));save();
  if(!P.length){g.innerHTML='<div style="grid-column:1/3;text-align:center;padding:30px;border:2px dashed #111;border-radius:12px;font-weight:900">ПУСТО</div>';return;}
- g.innerHTML=P.map(p=>'<div class="card" onclick="openM('+p.id+')"><div class="pic"><img id="im_'+p.id+'"></div><div style="font-size:10px;opacity:.5;font-weight:900;margin-top:4px">'+(p.brand||'')+'</div><div style="font-size:12px;font-weight:900;height:26px;overflow:hidden">'+p.name+'</div><div class="price">'+p.price+'₽</div></div>').join('');
+ g.innerHTML=P.map(p=>{
+  let sold=isSoldProduct(p);
+  return '<div class="card" style="'+(sold?'opacity:.55':'')+'" onclick="openM('+p.id+')"><div class="pic"><img id="im_'+p.id+'">'+(sold?'<div style="position:absolute;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;transform:rotate(-12deg);border:2px dashed #fff;text-align:center">СПИЗДИЛИ</div>':'')+'</div><div style="font-size:10px;opacity:.5;font-weight:900;margin-top:4px">'+(p.brand||'')+'</div><div style="font-size:12px;font-weight:900;height:26px;overflow:hidden">'+p.name+'</div><div class="price">'+p.price+'₽</div></div>'
+ }).join('');
  P.forEach(async p=>{let fid=(p.images&&p.images[0])?p.images[0]:p.img;if(!fid)return;try{let rr=await fetch('/api/file/'+fid);let jj=await rr.json();let el=document.getElementById('im_'+p.id);if(el)el.src=jj.url;}catch(e){}});
 }
 function openM(id){
@@ -71,24 +91,17 @@ function openM(id){
  let imgs=(p.images&&p.images.length?p.images:[p.img]).filter(Boolean);
  let gal=imgs.map((_,i)=>'<img id="g_'+id+'_'+i+'">').join('');
  let inCart=CART.includes(id);
- document.getElementById('modal').innerHTML='<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b style="font-size:11px;opacity:.6">УЗРИТЕ ЭТОТ ФЛЕЕЕЕЕЕЕКС</b><span onclick="closeAll()" style="font-size:24px;cursor:pointer">✕</span></div><div class="gal">'+gal+'</div><div style="padding:14px"><h2>'+(p.brand||'')+' '+p.name+'</h2><div style="opacity:.7;margin:6px 0">'+(p.size||'')+'</div><div style="font-weight:900;font-size:20px;margin:10px 0">'+p.price+'₽</div><button id="buy_'+id+'" class="btn '+(inCart?'added':'')+'" onclick="addToBox('+id+')">'+(inCart?'УБРАТЬ ИЗ КОРОБКИ':'ПОЛОЖИТЬ В КОРОБКУ')+'</button><button onclick="sniff()" style="width:100%;margin-top:8px;padding:12px;border:2.5px dashed #111;border-radius:12px;background:#fff;font-weight:900;color:#111">ПОНЮХАТЬ</button></div>';
+ let sold=isSoldProduct(p);
+ let btnText = sold? 'СПИЗДИЛИ, САМ ВИНОВАТ' : (inCart?'УБРАТЬ ИЗ КОРОБКИ':'ПОЛОЖИТЬ В КОРОБКУ');
+ let btnAction = sold? 'toast("СПИЗДИЛИ, САМ ВИНОВАТ 💀")' : 'addToBox('+id+')';
+ let btnExtraStyle = sold? 'background:#eee;color:#111;opacity:.7;' : '';
+ document.getElementById('modal').innerHTML='<div style="padding:12px;display:flex;justify-content:space-between;border-bottom:3px solid #111"><b style="font-size:11px;opacity:.6">УЗРИТЕ ЭТОТ ФЛЕЕЕЕЕЕЕКС</b><span onclick="closeAll()" style="font-size:24px;cursor:pointer">✕</span></div><div class="gal">'+gal+'</div><div style="padding:14px"><h2>'+(p.brand||'')+' '+p.name+'</h2><div style="opacity:.7;margin:6px 0">'+(p.size||'')+'</div><div style="font-weight:900;font-size:20px;margin:10px 0">'+p.price+'₽</div>'+(sold?'<div style="border:2.5px dashed #111;padding:10px;border-radius:10px;text-align:center;font-weight:900;margin-bottom:10px;background:#111;color:#fff">ЭТОТ ШМОТ УЖЕ СПИЗДИЛИ</div>':'')+'<button id="buy_'+id+'" class="btn '+(inCart&&!sold?'added':'')+'" style="'+btnExtraStyle+'" onclick="'+btnAction+'">'+btnText+'</button><button onclick="sniff()" style="width:100%;margin-top:8px;padding:12px;border:2.5px dashed #111;border-radius:12px;background:#fff;font-weight:900;color:#111">ПОНЮХАТЬ</button></div>';
  document.getElementById('modal').style.display='block';
  imgs.forEach(async(fid,i)=>{try{let rr=await fetch('/api/file/'+fid);let jj=await rr.json();let el=document.getElementById('g_'+id+'_'+i);if(el)el.src=jj.url;}catch(e){}});
 }
-function sniff(){
- const frases=["пахнет секондом с Щелчка, чуть потом и победой","пахнет как будто в ней спали 3 бомжа, но стильно","аромат свободы, сигарет и дорогого парфюма за 1200₽","пахнет флексом. чистый флекс.","бля, это же пахнет как твой будущий успех"];
- let t=frases[Math.floor(Math.random()*frases.length)];
- document.getElementById('sniffText').innerText=t;
- document.getElementById('sniffOverlay').style.display='flex';
- setTimeout(()=>{document.getElementById('sniffOverlay').style.display='none'},1800);
-}
-function addToBox(id){
- let was=CART.includes(id);
- if(was){CART=CART.filter(x=>x!=id);}else{CART.push(id);document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),300);if(CART.length>=3)boom();}
- save();closeAll();toast(was?'УБРАЛ':'В КОРОБКЕ 📦');
- let ic=document.getElementById('boxIcon');if(ic){ic.classList.add('jump');setTimeout(()=>ic.classList.remove('jump'),600);}
-}
-function toast(t){let el=document.getElementById('toast');el.innerText=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500);}
+function sniff(){const frases=["пахнет секондом с Щелчка, чуть потом и победой","пахнет как будто в ней спали 3 бомжа, но стильно","аромат свободы, сигарет и дорогого парфюма за 1200₽","пахнет флексом. чистый флекс.","бля, это же пахнет как твой будущий успех"];let t=frases[Math.floor(Math.random()*frases.length)];document.getElementById('sniffText').innerText=t;document.getElementById('sniffOverlay').style.display='flex';setTimeout(()=>{document.getElementById('sniffOverlay').style.display='none'},1800);}
+function addToBox(id){let p=P.find(x=>x.id==id);if(isSoldProduct(p)){ toast('СПИЗДИЛИ, САМ ВИНОВАТ 💀'); document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),300); return; }let was=CART.includes(id);if(was){CART=CART.filter(x=>x!=id);}else{CART.push(id);document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),300);if(CART.length>=3)boom();}save();closeAll();toast(was?'УБРАЛ':'В КОРОБКЕ 📦');let ic=document.getElementById('boxIcon');if(ic){ic.classList.add('jump');setTimeout(()=>ic.classList.remove('jump'),600);}}
+function toast(t){let el=document.getElementById('toast');el.innerText=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800);}
 function openCart(){renderCart();document.getElementById('cartModal').style.display='block';if(CART.length>=3)boom();}
 function closeAll(){document.getElementById('modal').style.display='none';document.getElementById('cartModal').style.display='none';}
 function getFlex(){let n=CART.length;if(n==0)return{p:0,txt:'БОМЖ 100% / FLEX 0% - пусто'};if(n==1)return{p:35,txt:'БОМЖ 65% / FLEX 35% - норм'};if(n==2)return{p:70,txt:'БОМЖ 30% / FLEX 70% - свежак'};return{p:100,txt:'БОМЖ 0% / FLEX 100% - БОГ СВЕГА 🔥'};}
@@ -109,7 +122,7 @@ async function checkout(){
   if(res.ok){
    let date = new Date().toLocaleString('ru-RU');
    let list = items.map(p=>'<div style="display:flex;justify-content:space-between"><span>'+p.name.slice(0,18)+'</span><span>'+p.price+'₽</span></div>').join('');
-   document.getElementById('cartModal').innerHTML='<div style="padding:40px 12px;text-align:center"><div style="font-size:40px">🧾</div><div class="receipt" style="text-align:left"><div style="text-align:center;font-weight:900">ООО "GOOFY BOX"<br>СПАСИБО ЗА ПОКУПКУ, БРОДЯГА</div><div style="border-top:1px dashed #111;margin:8px 0"></div><div style="font-size:10px">КАССА: #666 КАССИР: БОМЖ С ЩЕЛЧКА<br>ДАТА: '+date+'</div><div style="border-top:1px dashed #111;margin:8px 0"></div>'+list+'<div style="border-top:1px dashed #111;margin:8px 0"></div><div style="display:flex;justify-content:space-between;font-weight:900"><span>ИТОГО ФЛЕКС:</span><span>'+total+'₽</span></div><div style="border-top:1px dashed #111;margin:8px 0"></div><div style="text-align:center;font-size:10px">ПАКЕТ МАЙКА - 0₽<br>ПАКЕТ НЕ НУЖЕН - ТЫ И ТАК БОМЖ<br>*** ФЛЕКС НЕ ПОДЛЕЖИТ ВОЗВРАТУ ***<br><br>ЧТОБЫ НЕ ПОТЕРЯТЬ - СКРИНЬ ЧЕК</div></div><button class="btn" style="margin-top:15px" onclick="CART=[];DISCOUNT=0;save();closeAll();load();">ОК, СКРИН СДЕЛАЛ</button></div>';
+   document.getElementById('cartModal').innerHTML='<div style="padding:40px 12px;text-align:center"><div style="font-size:40px">🧾</div><div class="receipt" style="text-align:left"><div style="text-align:center;font-weight:900">ООО "GOOFY BOX"<br>СПАСИБО ЗА ПОКУПКУ, БРОДЯГА</div><div style="border-top:1px dashed #111;margin:8px 0"></div><div style="font-size:10px">КАССА: #666 КАССИР: БОМЖ С ЩЕЛЧКА<br>ДАТА: '+date+'</div><div style="border-top:1px dashed #111;margin:8px 0"></div>'+list+'<div style="border-top:1px dashed #111;margin:8px 0"></div><div style="display:flex;justify-content:space-between;font-weight:900"><span>ИТОГО ФЛЕКС:</span><span>'+total+'₽</span></div><div style="border-top:1px dashed #111;margin:8px 0"></div><div style="text-align:center;font-size:10px">ПАКЕТ НЕ НУЖЕН - ТЫ И ТАК БОМЖ<br>*** ФЛЕКС НЕ ПОДЛЕЖИТ ВОЗВРАТУ ***</div></div><button class="btn" style="margin-top:15px" onclick="CART=[];DISCOUNT=0;save();closeAll();load();">ОК, СКРИН СДЕЛАЛ</button></div>';
    CART=[];save();boom();
   }else{alert('Ошибка');}
  }catch(e){alert('Сеть');}
