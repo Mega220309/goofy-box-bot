@@ -122,16 +122,7 @@ async function checkout(){
   let res=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:u,items:CART,total,discount:DISCOUNT?10:0})});
   if(res.ok){
    let date = new Date().toLocaleString('ru-RU');
-   let list = items.map(p=>'<div style="display:flex;justify-content:space-between;margin:3px 0"><span>'+p.name.slice(0,20)+'</span><span>'+p.price+'₽</span></div>').join('');
-   document.getElementById('cartModal').innerHTML='<div style="padding:20px 12px;text-align:center"><div style="font-size:44px">🧾</div><div class="receipt" style="text-align:left"><div style="text-align:center;font-weight:900;font-size:14px">ООО "GOOFY BOX"<br>СПАСИБО ЗА ПОКУПКУ, БРОДЯГА</div><div style="border-top:2px dashed #111;margin:10px 0"></div><div style="font-size:11px;line-height:1.4">КАССА: #666 КАССИР: БОМЖ С ЩЕЛЧКА<br>ДАТА: '+date+'<br>ТОЧКА: ТЦ ГОРОД, САЛАВАТ</div><div style="border-top:1px dashed #111;margin:10px 0"></div>'+list+'<div style="border-top:1px dashed #111;margin:10px 0"></div><div style="display:flex;justify-content:space-between;font-size:11px"><span>ПАКЕТ GOOFY CRACK (КРАФТ)</span><span>15₽</span></div><div style="display:flex;justify-content:space-between;font-size:11px"><span>НАКЛЕЙКА В ПОДАРОК</span><span>0₽</span></div><div style="display:flex;justify-content:space-between;font-size:11px"><span>ДОСТАВКА (ПРЕДВАРИТ)</span><span>~400₽</span></div><div style="border-top:2px dashed #111;margin:10px 0"></div><div style="display:flex;justify-content:space-between;font-weight:900;font-size:14px"><span>ИТОГО ФЛЕКС:</span><span>'+total+'₽</span></div><div style="border-top:2px dashed #111;margin:10px 0"></div><div style="text-align:center;font-size:9px;line-height:1.3;opacity:.7">ФЛЕКС НАЧИСЛЕН: +'+Math.round(total/10)+' БАЛЛОВ<br>QR-КОД ДЛЯ ПРОВЕРКИ ПОДЛИННОСТИ:<br><div style="font-size:20px;margin:6px 0">▓▓▓▓ ▓░ ▓▓▓▓<br>░▓░▓ ▓▓▓▓ ░▓░▓<br>▓▓▓▓ ░▓░░ ▓▓▓▓</div>СОХРАНИ ЧЕК, БРОДЯГА<br>ВОЗВРАТ 14 ДНЕЙ • NOSI POKA NE UKRALI</div></div><button class="btn" style="margin-top:15px" onclick="vib();CART=[];DISCOUNT=0;save();closeAll();load();">ОК, ПОНЯЛ 👌</button></div>';
-   CART=[];save();boom();
-  }else{alert('Ошибка');}
- }catch(e){alert('Сеть');}
-}
-let stealthTimer;
-function resetStealth(){clearTimeout(stealthTimer);document.getElementById('stealthOverlay').style.display='none';stealthTimer=setTimeout(()=>{document.getElementById('stealthOverlay').style.display='flex';},60000);}
-function hideStealth(){vib();document.getElementById('stealthOverlay').style.display='none';resetStealth();}
-['mousemove','click','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,resetStealth));
-resetStealth();
-load();
-</script></body></html>
+   let list = items.map(p=>'<div style="display:flex;justify-content:space-between;margin:5px 0"><span>'+p.name.slice(0,20)+'</span><span>'+p.price+'₽</span></div>').join('');
+   let phrases = ["ЭТОТ ЧЕК МОЖНО НЕ СОХРАНЯТЬ, ОН И ТАК НИХУЯ НЕ ЗНАЧИТ","ЕСЛИ ПОРВЕТСЯ - СКЛЕЙ СКОТЧЕМ, БУДЕТ ВИНТАЖ","ГАРАНТИЯ - ПОКА НОСИШЬ, ПОТОМ ХУЙ ЕГО ЗНАЕТ","ЧЕК ВЫЦВЕТЕТ БЫСТРЕЕ ЧЕМ ТВОЙ ФЛЕКС"];
+   let randPhrase = phrases[Math.floor(Math.random()*phrases.length)];
+   document.getElementById('cartModal').innerHTML=`<div style="padding:20px 12px;text-align:center"><div style="font-size:44px">🧾</div><div class="receipt" style="text-align:left"><div style="text-align:center;font-weight:900;font-size:15px">ООО "GOOFY BOX"<br>СПАСИБО ЗА ПОКУПКУ, БРОДЯГА</div><div style="border-top:2px dashed #111;margin:10px 0"></div><div style="font-size:11px;line-height:1.4">КАССА: #666 КАССИР: БОМЖ С ЩЕЛЧКА<br>(В ДУШЕ НЕ ЕБЕТ СКОЛЬКО СТОИТ)<br>ДАТА: ${date}<br>ВРЕМЯ ФЛЕКСИ
