@@ -6,13 +6,25 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from aiohttp import web
 
+# --- RENDER FIX: читаем оба варианта переменных ---
 TOKEN = os.getenv("TOKEN") or os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID","5020382411"))
-WEBAPP_URL = os.getenv("WEBAPP_URL","https://goofy-box-bot-production.up.railway.app/")
+# RENDER FIX: теперь берется из переменной окружения Render, а не Railway
+WEBAPP_URL = os.getenv("WEBAPP_URL","").rstrip("/")
 
 bot = Bot(TOKEN)
 dp = Dispatcher()
-PATHS = [pathlib.Path(p) for p in ["/data/products.json", "products.json", "/tmp/products.json"]]
+
+# RENDER FIX: на Render нет /data по умолчанию, используем./data + fallback
+DATA_PATH = pathlib.Path(os.getenv("DATA_PATH", "data/products.json"))
+PATHS = [
+    DATA_PATH,
+    pathlib.Path("products.json"),
+    pathlib.Path("/tmp/products.json"),
+    pathlib.Path("data/products.json"),
+    pathlib.Path("/data/products.json"),
+]
+
 def load():
     for path in PATHS:
         if path.exists():
@@ -21,12 +33,15 @@ def load():
                 if data: return data
             except: pass
     return []
+
 def save(d):
     for path in PATHS:
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+            break
         except: pass
+
 def status(p):
     if not p.get("sold"): return "active"
     return "expired" if time.time()-(p.get("sold_at")or 0) > 10*3600 else "sold_recent"
@@ -37,14 +52,17 @@ class Add(StatesGroup):
 @dp.message(Command("start"))
 async def start(m:Message):
     from aiogram.utils.keyboard import InlineKeyboardBuilder
-    kb=InlineKeyboardBuilder(); kb.button(text="📦 ОТКРЫТЬ КОРОБКУ", web_app=WebAppInfo(url=WEBAPP_URL))
-    await m.answer(f"Goofy BOX • {len(load())} товара", reply_markup=kb.as_markup())
+    url = WEBAPP_URL or f"https://{os.getenv('RENDER_EXTERNAL_HOSTNAME','')}"
+    kb=InlineKeyboardBuilder()
+    if url:
+        kb.button(text="📦 ОТКРЫТЬ КОРОБКУ", web_app=WebAppInfo(url=url))
+    await m.answer(f"Goofy BOX • {len(load())} товара\n\nWebApp URL: {url or 'не задан (добавь WEBAPP_URL в Render)'}", reply_markup=kb.as_markup() if url else None)
 
 @dp.message(Command("add"))
 async def a0(m:Message, state:FSMContext):
     if m.from_user.id!=ADMIN_ID: return
     await state.set_state(Add.photos); await state.update_data(photos=[])
-    await m.answer("📸 Кидай фото (до 10). ГОТОВО когда хватит")
+    await m.answer("📸 Кидай фото (до 10). Напиши ГОТОВО когда хватит")
 @dp.message(Add.photos, F.photo)
 async def a_photo(m:Message, state:FSMContext):
     d=await state.get_data(); ph=d.get("photos",[]); ph.append(m.photo[-1].file_id)
@@ -77,7 +95,7 @@ async def a6(m:Message, state:FSMContext):
 async def a7(m:Message, state:FSMContext):
     d=await state.get_data(); ps=load()
     tag="" if m.text.strip()=="-" else m.text.strip()
-    ps.insert(0, {"id":int(time.time()*1000),"name":d["name"],"brand":d["brand"],"price":d["price"],"size":d["size"],"sizes":[d["size"]],"tag":tag,"description":d.get("desc",""),"img":d["photos"][0],"images":d["photos"],"sold":False,"sold_at":0})
+    ps.insert(0, {"id":int(time.time()*1000),"name":d["name"],"brand":d["brand"],"price":d["price"],"size":d["size"],"sizes":[d["size"]],"tag":tag,"tags":[tag] if tag else [],"description":d.get("desc",""),"img":d["photos"][0],"images":d["photos"],"sold":False,"sold_at":0})
     save(ps); await state.clear(); await m.answer(f"✅ Добавил! Всего: {len(ps)}")
 
 @dp.message(Command("list"))
@@ -91,56 +109,4 @@ async def cu(c):
     pid=int(c.data.split("_")[1]); ps=load()
     for p in ps:
         if p['id']==pid: p['sold']=False; p['sold_at']=0
-    save(ps); await c.message.edit_text("✅ Вернул"); await c.answer()
-@dp.callback_query(F.data.startswith("sold_"))
-async def cs(c):
-    pid=int(c.data.split("_")[1]); ps=load()
-    for p in ps:
-        if p['id']==pid: p['sold']=True; p['sold_at']=time.time()
-    save(ps); await c.message.edit_text("🔥 Продано"); await c.answer()
-@dp.callback_query(F.data.startswith("del_"))
-async def cd(c):
-    pid=int(c.data.split("_")[1]); save([p for p in load() if p['id']!=pid]); await c.message.edit_text("🗑️ Удалил"); await c.answer()
-
-async def api_products(r):
-    ps=load(); alive=[]
-    for p in ps:
-        if status(p)!="expired": cp=p.copy(); cp["status"]=status(p); alive.append(cp)
-    return web.json_response(alive, headers={"Cache-Control":"no-cache"})
-async def api_file(r):
-    f=await bot.get_file(r.match_info['file_id']); return web.json_response({"url":f"https://api.telegram.org/file/bot{TOKEN}/{f.file_path}"})
-async def api_order(r):
-    try:
-        data = await r.json()
-        user = data.get("user", {})
-        items = data.get("items", [])
-        total = data.get("total", 0)
-        ps = load()
-        ordered = [p for p in ps if p["id"] in items]
-        username = user.get("username")
-        name = f"{user.get('first_name','')} {user.get('last_name','')}".strip()
-        uid = user.get("id")
-        mention = f"@{username} ({name})" if username else f"{name} [ID {uid}]"
-        user_link = f"@{username}" if username else f"tg://user?id={uid}"
-        text = f"📦 НОВЫЙ ЗАКАЗ!\n\n👤 Клиент: {mention}\n🆔 ID: {uid}\n\n📋 Товары ({len(ordered)}):\n"
-        for p in ordered:
-            text += f"• {p['brand']} {p['name']} - {p['price']}₽ (размер {p.get('size','')})\n"
-        text += f"\n💰 ИТОГО: {total}₽\n\n👉 Напиши ему: {user_link}"
-        kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="💬 Написать клиенту", url=f"https://t.me/{username}" if username else f"tg://user?id={uid}")]]) if username else None
-        await bot.send_message(ADMIN_ID, text, reply_markup=kb)
-        return web.json_response({"ok": True})
-    except Exception as e:
-        print(f"order error: {e}")
-        return web.json_response({"ok": False}, status=500)
-
-app=web.Application()
-app.router.add_get('/api/products', api_products)
-app.router.add_get('/api/file/{file_id}', api_file)
-app.router.add_post('/api/order', api_order)
-app.router.add_get('/', lambda r: web.FileResponse(pathlib.Path(__file__).parent/'static'/'index.html', headers={"Cache-Control":"no-cache"}))
-app.router.add_static('/static/', path=pathlib.Path(__file__).parent/'static')
-
-async def main():
-    runner=web.AppRunner(app); await runner.setup(); await web.TCPSite(runner,'0.0.0.0',int(os.getenv("PORT",8080))).start()
-    await dp.start_polling(bot)
-if __name__=="__main__": asyncio.run(main())
+    save(ps); await c.message.edit_text("✅ Вернул"); await c.answer
